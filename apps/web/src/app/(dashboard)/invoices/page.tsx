@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { fetchBilling, createCheckoutSession, createPortalSession } from '@/lib/billing';
@@ -86,7 +87,7 @@ function CheckIcon() {
   );
 }
 
-export default function InvoicesPage(): React.ReactElement {
+function InvoicesContent(): React.ReactElement {
   const searchParams = useSearchParams();
   const isSuccess = searchParams.get('success') === '1';
   const isCancelled = searchParams.get('cancelled') === '1';
@@ -277,5 +278,13 @@ export default function InvoicesPage(): React.ReactElement {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function InvoicesPage(): React.ReactElement {
+  return (
+    <Suspense>
+      <InvoicesContent />
+    </Suspense>
   );
 }
