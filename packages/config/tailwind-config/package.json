@@ -1,0 +1,9 @@
+{
+  "name": "@wpp-recebo/tailwind-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

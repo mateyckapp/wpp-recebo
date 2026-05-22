@@ -1,0 +1,529 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum CampaignStatus {
+  DRAFT
+  SENDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum Plan {
+  START
+  PRO
+  ENTERPRISE
+  AGENDA_PRO
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+  CANCELLED
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  AGENT
+}
+
+enum ConversationStatus {
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  AUDIO
+  VIDEO
+  DOCUMENT
+  LOCATION
+  CONTACT
+  INTERACTIVE
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum ScheduledStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  NO_SHOW
+  COMPLETED
+}
+
+// ─── Modelos ──────────────────────────────────────────────────────────────────
+
+model Tenant {
+  id                         String       @id @default(cuid())
+  slug                       String       @unique
+  name                       String
+  plan                       Plan         @default(START)
+  status                     TenantStatus @default(ACTIVE)
+  customDomain               String?      @unique
+  whatsappPhoneNumberId      String?
+  whatsappBusinessAccountId  String?
+  whatsappAccessToken        String?
+  stripeCustomerId           String?
+  stripeSubscriptionId       String?
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+
+  users              User[]
+  contacts           Contact[]
+  conversations      Conversation[]
+  messages           Message[]
+  tags               Tag[]
+  templates          MessageTemplate[]
+  kanbanColumns      KanbanColumn[]
+  scheduledMessages  ScheduledMessage[]
+  contactGroups      ContactGroup[]
+  campaigns          Campaign[]
+  aiConfig           AIConfig?
+  aiInteractions     AIInteraction[]
+  auditLogs          AuditLog[]
+  services           Service[]
+  professionals      Professional[]
+  appointments       Appointment[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email     String    @unique
+  password  String
+  name      String
+  role      UserRole  @default(AGENT)
+  isActive  Boolean   @default(true)
+  lastSeen  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  assignedConversations Conversation[]
+  sentMessages          Message[]
+  conversationNotes     ConversationNote[]
+  conversationTasks     ConversationTask[]
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Contact {
+  id              String    @id @default(cuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  phoneNumber     String
+  name            String?
+  avatarUrl       String?
+  email           String?
+  notes           String?
+  customFields    Json?
+  lastInteraction DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  conversations Conversation[]
+  groups        ContactGroupMember[]
+  appointments  Appointment[]
+
+  @@unique([tenantId, phoneNumber])
+  @@index([tenantId])
+  @@map("contacts")
+}
+
+model Conversation {
+  id             String             @id @default(cuid())
+  tenantId       String
+  tenant         Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contactId      String
+  contact        Contact            @relation(fields: [contactId], references: [id])
+  assignedUserId String?
+  assignedUser   User?              @relation(fields: [assignedUserId], references: [id])
+  kanbanColumnId String
+  kanbanColumn   KanbanColumn       @relation(fields: [kanbanColumnId], references: [id])
+  status         ConversationStatus @default(OPEN)
+  estimatedValue Float?
+  aiEnabled      Boolean            @default(false)
+  unreadCount    Int                @default(0)
+  lastMessageAt  DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  messages     Message[]
+  tags         ConversationTag[]
+  notes        ConversationNote[]
+  tasks        ConversationTask[]
+  appointments Appointment[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, kanbanColumnId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String           @id @default(cuid())
+  tenantId       String
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation     @relation(fields: [conversationId], references: [id])
+  whatsappId     String?          @unique
+  direction      MessageDirection
+  type           MessageType
+  content        String?
+  mediaUrl       String?
+  mediaMimeType  String?
+  transcription  String?
+  sentByUserId   String?
+  sentByUser     User?            @relation(fields: [sentByUserId], references: [id])
+  sentByAI       Boolean          @default(false)
+  status         MessageStatus    @default(SENT)
+  createdAt      DateTime         @default(now())
+
+  @@index([tenantId])
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model KanbanColumn {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  color     String   @default("#6B7280")
+  position  Int
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  conversations Conversation[]
+
+  @@index([tenantId])
+  @@map("kanban_columns")
+}
+
+model Tag {
+  id       String @id @default(cuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name     String
+  color    String @default("#6B7280")
+
+  conversations ConversationTag[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("tags")
+}
+
+model ConversationTag {
+  conversationId String
+  tagId          String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  tag            Tag          @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  assignedAt     DateTime     @default(now())
+
+  @@id([conversationId, tagId])
+  @@map("conversation_tags")
+}
+
+model ConversationNote {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  authorUserId   String
+  author         User         @relation(fields: [authorUserId], references: [id])
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@map("conversation_notes")
+}
+
+model ConversationTask {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  title          String
+  dueAt          DateTime?
+  completedAt    DateTime?
+  assignedUserId String?
+  assignedUser   User?        @relation(fields: [assignedUserId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@map("conversation_tasks")
+}
+
+model ContactGroup {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  color     String   @default("#6B7280")
+  createdAt DateTime @default(now())
+
+  contacts  ContactGroupMember[]
+  campaigns Campaign[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("contact_groups")
+}
+
+model ContactGroupMember {
+  groupId   String
+  contactId String
+  group     ContactGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  contact   Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  addedAt   DateTime     @default(now())
+
+  @@id([groupId, contactId])
+  @@map("contact_group_members")
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  tenantId    String
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  groupId     String
+  group       ContactGroup   @relation(fields: [groupId], references: [id])
+  name        String
+  message     String
+  status      CampaignStatus @default(DRAFT)
+  totalCount  Int            @default(0)
+  sentCount   Int            @default(0)
+  failedCount Int            @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([tenantId])
+  @@map("campaigns")
+}
+
+model MessageTemplate {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  shortcut  String
+  name      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, shortcut])
+  @@index([tenantId])
+  @@map("message_templates")
+}
+
+model ScheduledMessage {
+  id             String          @id @default(cuid())
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId String
+  content        String
+  scheduledFor   DateTime
+  status         ScheduledStatus @default(PENDING)
+  createdAt      DateTime        @default(now())
+
+  @@index([tenantId])
+  @@index([status, scheduledFor])
+  @@map("scheduled_messages")
+}
+
+model AIConfig {
+  id                      String   @id @default(cuid())
+  tenantId                String   @unique
+  tenant                  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  isEnabled               Boolean  @default(false)
+  businessContext         String?
+  workingHours            Json?
+  autoReplyOutsideHours   Boolean  @default(false)
+  knowledgeBase           String?
+  knowledgeEmbeddings     Json?
+  fallbackToHuman         Boolean  @default(true)
+  notifyOwnerOnFail       Boolean  @default(true)
+  updatedAt               DateTime @updatedAt
+
+  @@map("ai_configs")
+}
+
+model AIInteraction {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId String
+  messageId      String
+  prompt         String
+  response       String
+  model          String
+  tokensInput    Int
+  tokensOutput   Int
+  costCents      Int
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([conversationId])
+  @@map("ai_interactions")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([tenantId, resource])
+  @@map("audit_logs")
+}
+
+// ─── Agenda ───────────────────────────────────────────────────────────────────
+
+model Service {
+  id           String        @id @default(cuid())
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name         String
+  duration     Int           // minutos
+  price        Float?
+  description  String?
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  appointments Appointment[]
+
+  @@index([tenantId])
+  @@map("services")
+}
+
+model Professional {
+  id           String         @id @default(cuid())
+  tenantId     String
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name         String
+  specialty    String?
+  active       Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  schedule     WorkSchedule[]
+  workBreaks   WorkBreak[]
+  timeBlocks   TimeBlock[]
+  appointments Appointment[]
+
+  @@index([tenantId])
+  @@map("professionals")
+}
+
+model WorkSchedule {
+  id             String       @id @default(cuid())
+  professionalId String
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int          // 0=Dom, 1=Seg, ..., 6=Sáb
+  startTime      String       // "09:00"
+  endTime        String       // "18:00"
+
+  @@index([professionalId])
+  @@map("work_schedules")
+}
+
+model WorkBreak {
+  id             String       @id @default(cuid())
+  professionalId String
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  startTime      String       // "12:00"
+  endTime        String       // "13:00"
+  label          String?      // "Almoço", "Pausa", etc.
+  createdAt      DateTime     @default(now())
+
+  @@index([professionalId])
+  @@map("work_breaks")
+}
+
+model TimeBlock {
+  id             String       @id @default(cuid())
+  professionalId String
+  professional   Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  date           String       // "YYYY-MM-DD"
+  startTime      String       // "12:00"
+  endTime        String       // "14:30"
+  reason         String?
+  createdAt      DateTime     @default(now())
+
+  @@index([professionalId])
+  @@index([professionalId, date])
+  @@map("time_blocks")
+}
+
+model AdminConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_configs")
+}
+
+model Appointment {
+  id             String            @id @default(cuid())
+  tenantId       String
+  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contactId      String
+  contact        Contact           @relation(fields: [contactId], references: [id])
+  conversationId String?
+  conversation   Conversation?     @relation(fields: [conversationId], references: [id])
+  serviceId      String
+  service        Service           @relation(fields: [serviceId], references: [id])
+  professionalId String
+  professional   Professional      @relation(fields: [professionalId], references: [id])
+  scheduledAt    DateTime
+  status         AppointmentStatus @default(PENDING)
+  notes          String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, scheduledAt])
+  @@index([contactId])
+  @@map("appointments")
+}
