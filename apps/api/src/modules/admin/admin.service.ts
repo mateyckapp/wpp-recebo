@@ -43,12 +43,21 @@ export class AdminService {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const [total, byStatus, byPlan, newThisMonth, newLast30Days] = await Promise.all([
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    const [total, byStatus, byPlan, newThisMonth, newLast30Days, totalMessages, messagesToday, totalAppointments, appointmentsThisWeek, activeWhatsapp] = await Promise.all([
       this.prisma.tenant.count(),
       this.prisma.tenant.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.tenant.groupBy({ by: ['plan'], _count: { _all: true }, where: { status: TenantStatus.ACTIVE } }),
       this.prisma.tenant.count({ where: { createdAt: { gte: startOfMonth } } }),
       this.prisma.tenant.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+      this.prisma.message.count(),
+      this.prisma.message.count({ where: { createdAt: { gte: today } } }),
+      this.prisma.appointment.count(),
+      this.prisma.appointment.count({ where: { scheduledAt: { gte: weekAgo } } }),
+      this.prisma.tenant.count({ where: { whatsappPhoneNumberId: { not: null } } }),
     ]);
 
     const config = await this.getConfig();
@@ -73,13 +82,21 @@ export class AdminService {
       newThisMonth,
       newLast30Days,
       planDistribution,
+      totalMessages,
+      messagesToday,
+      totalAppointments,
+      appointmentsThisWeek,
+      activeWhatsapp,
     };
   }
 
   // ── Tenants ───────────────────────────────────────────────────────────────
 
   async getTenants(search?: string) {
-    return this.prisma.tenant.findMany({
+    const config = await this.getConfig();
+    const planPrices = this.resolvePlanPrices(config);
+
+    const tenants = await this.prisma.tenant.findMany({
       where: search
         ? {
             OR: [
@@ -95,12 +112,18 @@ export class AdminService {
         plan: true,
         status: true,
         createdAt: true,
+        whatsappPhoneNumberId: true,
         stripeCustomerId: true,
         stripeSubscriptionId: true,
-        _count: { select: { users: true, appointments: true } },
+        _count: { select: { users: true, appointments: true, messages: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    return tenants.map((t) => ({
+      ...t,
+      mrr: t.status === TenantStatus.ACTIVE ? (planPrices[t.plan] ?? 0) : 0,
+    }));
   }
 
   async updateTenant(id: string, data: { plan?: Plan; status?: TenantStatus }) {

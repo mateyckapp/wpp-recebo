@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +18,18 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage(): React.ReactElement {
   const router = useRouter();
   const { login, isLoading } = useAuthStore();
+
+  // Bloqueia acesso à página de login em subdomínios (ex: demo.localhost)
+  // O login só existe no domínio raiz (localhost ou wpprecebo.pt)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const parts = window.location.hostname.split('.');
+    if (parts.length > 1) {
+      const root = parts.slice(1).join('.');
+      const port = window.location.port ? `:${window.location.port}` : '';
+      window.location.replace(`${window.location.protocol}//${root}${port}/login`);
+    }
+  }, []);
 
   const {
     register,

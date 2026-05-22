@@ -22,6 +22,8 @@ import {
   updateWhatsappSettings,
   testWhatsappConnection,
 } from '@/lib/settings';
+import { updateProfile } from '@/lib/users';
+import { fetchBranding, updateBranding } from '@/lib/branding';
 import { useAuthStore } from '@/stores/auth.store';
 import Link from 'next/link';
 
@@ -593,6 +595,241 @@ function TeamSection(): React.ReactElement {
   );
 }
 
+function ProfileSection(): React.ReactElement {
+  const { user, setUser } = useAuthStore();
+  const [name, setName] = useState(user?.name ?? '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    if (!name.trim()) return;
+
+    if ((currentPassword || newPassword) && newPassword.length < 8) {
+      setError('A nova password deve ter pelo menos 8 caracteres');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const updated = await updateProfile({
+        name: name !== user?.name ? name : undefined,
+        ...(currentPassword && newPassword ? { currentPassword, newPassword } : {}),
+      });
+      setUser({ ...user!, name: updated.name });
+      setCurrentPassword('');
+      setNewPassword('');
+      setSuccess('Perfil actualizado com sucesso');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } };
+      setError(e?.response?.data?.message ?? 'Erro ao guardar. Tenta novamente.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-6 space-y-5">
+      <div>
+        <h2 className="font-semibold text-gray-100">O meu perfil</h2>
+        <p className="text-sm text-gray-500 mt-0.5">Nome e palavra-passe da tua conta</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Avatar initials */}
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-brand-600/25 text-brand-300 flex items-center justify-center text-xl font-bold flex-shrink-0 border border-brand-500/20">
+            {name.charAt(0).toUpperCase() || '?'}
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs font-medium text-gray-400 mb-1">Nome</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              maxLength={100}
+              placeholder="O teu nome"
+              className={inputCls}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
+          <input
+            value={user?.email ?? ''}
+            disabled
+            className={`${inputCls} opacity-40 cursor-not-allowed`}
+          />
+        </div>
+
+        <div className="border-t border-white/[0.06] pt-4">
+          <p className="text-xs font-medium text-gray-400 mb-3">Alterar palavra-passe <span className="text-gray-600 font-normal">(opcional)</span></p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Palavra-passe actual</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="••••••••"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Nova palavra-passe</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="mínimo 8 caracteres"
+                className={inputCls}
+              />
+            </div>
+          </div>
+        </div>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+        {success && <p className="text-xs text-emerald-400">{success}</p>}
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="text-sm px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-500 disabled:opacity-50 transition-colors"
+          >
+            {saving ? 'A guardar...' : 'Guardar alterações'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function BrandingSection(): React.ReactElement {
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useQuery({ queryKey: ['branding'], queryFn: fetchBranding });
+
+  const [logoUrl, setLogoUrl] = useState('');
+  const [primaryColor, setPrimaryColor] = useState('#7c3aed');
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (data) {
+      setLogoUrl(data.logoUrl ?? '');
+      setPrimaryColor(data.primaryColor ?? '#7c3aed');
+    }
+  }, [data]);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    setSuccess(false);
+    try {
+      await updateBranding({
+        logoUrl: logoUrl.trim() || null,
+        primaryColor,
+      });
+      void queryClient.invalidateQueries({ queryKey: ['branding'] });
+      setSuccess(true);
+    } catch {
+      setError('Erro ao guardar. Verifica o URL da logo.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const PRESET_COLORS = ['#7c3aed', '#2563eb', '#16a34a', '#dc2626', '#d97706', '#db2777', '#0891b2', '#374151'];
+
+  if (isLoading) return <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-6"><p className="text-sm text-gray-500">A carregar...</p></div>;
+
+  return (
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-6 space-y-5">
+      <div>
+        <h2 className="font-semibold text-gray-100">Personalização da página pública</h2>
+        <p className="text-sm text-gray-500 mt-0.5">Logo e cor que aparecem na página de agendamento dos teus clientes</p>
+      </div>
+
+      <form onSubmit={handleSave} className="space-y-4">
+        {/* Preview */}
+        <div className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white font-bold text-lg"
+            style={{ backgroundColor: primaryColor }}
+          >
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt="Logo" className="w-8 h-8 object-contain rounded" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            ) : (
+              data?.name?.charAt(0).toUpperCase() ?? 'W'
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-200">{data?.name}</p>
+            <p className="text-xs text-gray-500">Pré-visualização da marca</p>
+          </div>
+        </div>
+
+        {/* Logo URL */}
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1">URL da logo <span className="text-gray-600 font-normal">(opcional)</span></label>
+          <input
+            type="url"
+            value={logoUrl}
+            onChange={(e) => setLogoUrl(e.target.value)}
+            placeholder="https://empresa.pt/logo.png"
+            className={inputCls}
+          />
+          <p className="text-xs text-gray-600 mt-1">Usa um link directo para uma imagem (PNG, SVG). O ideal é 64×64px ou maior.</p>
+        </div>
+
+        {/* Cor primária */}
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-2">Cor primária</label>
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2 flex-wrap">
+              {PRESET_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setPrimaryColor(c)}
+                  className={`w-7 h-7 rounded-full transition-transform hover:scale-110 ${primaryColor === c ? 'ring-2 ring-offset-2 ring-white/40 ring-offset-[#0d0d14] scale-110' : ''}`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
+            </div>
+            <input
+              type="color"
+              value={primaryColor}
+              onChange={(e) => setPrimaryColor(e.target.value)}
+              className="w-8 h-8 rounded-lg cursor-pointer border border-white/[0.1] bg-transparent"
+              title="Cor personalizada"
+            />
+            <span className="text-xs font-mono text-gray-400">{primaryColor}</span>
+          </div>
+        </div>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+        {success && <p className="text-xs text-emerald-400">Guardado com sucesso</p>}
+
+        <div className="flex justify-end">
+          <button type="submit" disabled={saving} className="text-sm px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-500 disabled:opacity-50 transition-colors">
+            {saving ? 'A guardar...' : 'Guardar'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function AiSettingsSection(): React.ReactElement {
   const queryClient = useQueryClient();
 
@@ -737,6 +974,8 @@ export default function SettingsPage(): React.ReactElement {
   return (
     <div className="overflow-y-auto flex-1">
       <div className="max-w-2xl mx-auto space-y-6">
+        <ProfileSection />
+        <BrandingSection />
         <WhatsappSettingsSection />
         <TeamSection />
         <AiSettingsSection />

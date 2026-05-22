@@ -151,6 +151,18 @@ export default function AdminDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Atividade global */}
+      <div>
+        <h2 className="text-sm font-medium text-white/50 mb-4">Atividade da plataforma</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <KpiCard label="Total de mensagens" value={stats.totalMessages.toLocaleString('pt-PT')} sub="desde sempre" />
+          <KpiCard label="Mensagens hoje" value={stats.messagesToday.toLocaleString('pt-PT')} />
+          <KpiCard label="Total de agendamentos" value={stats.totalAppointments.toLocaleString('pt-PT')} />
+          <KpiCard label="Agendamentos (7d)" value={stats.appointmentsThisWeek.toLocaleString('pt-PT')} />
+          <KpiCard label="WhatsApp ligados" value={stats.activeWhatsapp} sub={`de ${stats.total} workspaces`} />
+        </div>
+      </div>
     </div>
   );
 }

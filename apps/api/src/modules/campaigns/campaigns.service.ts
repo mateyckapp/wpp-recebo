@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
+import { PlanLimitsService } from '../plan-limits/plan-limits.service';
 import { CampaignStatus, MessageDirection, MessageStatus, MessageType } from '@prisma/client';
 
 const DELAY_MS = 1200; // 1.2s entre mensagens para evitar bloqueio WhatsApp
@@ -16,6 +17,7 @@ export class CampaignsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly whatsapp: WhatsappService,
+    private readonly planLimits: PlanLimitsService,
   ) {}
 
   async findAll(tenantId: string) {
@@ -36,6 +38,8 @@ export class CampaignsService {
   }
 
   async create(tenantId: string, data: { name: string; message: string; groupId: string }) {
+    await this.planLimits.assertCampaignsEnabled(tenantId);
+
     const group = await this.prisma.contactGroup.findFirst({
       where: { id: data.groupId, tenantId },
       include: { _count: { select: { contacts: true } } },

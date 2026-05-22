@@ -18,6 +18,7 @@ function extractSlug(host: string): string | null {
 
 export interface TenantInfo { name: string; slug: string }
 export interface PublicService { id: string; name: string; duration: number; price: number | null; description: string | null }
+export interface TenantBranding { logoUrl: string | null; primaryColor: string }
 
 export default async function AgendarPage() {
   const headersList = await headers();
@@ -25,17 +26,19 @@ export default async function AgendarPage() {
   const slug = extractSlug(host);
   if (!slug) notFound();
 
-  const api = process.env['API_URL'] ?? 'http://localhost:3001/api/v1';
+  const apiBase = process.env['API_URL'] ?? 'http://localhost:3001/api/v1';
 
-  const [infoRes, servicesRes] = await Promise.all([
-    fetch(`${api}/public/agenda/info?slug=${slug}`, { next: { revalidate: 300 } }),
-    fetch(`${api}/public/agenda/services?slug=${slug}`, { next: { revalidate: 60 } }),
+  const [infoRes, servicesRes, brandingRes] = await Promise.all([
+    fetch(`${apiBase}/public/agenda/info?slug=${slug}`, { next: { revalidate: 300 } }),
+    fetch(`${apiBase}/public/agenda/services?slug=${slug}`, { next: { revalidate: 60 } }),
+    fetch(`${apiBase}/public/agenda/branding?slug=${slug}`, { next: { revalidate: 300 } }),
   ]);
 
   if (!infoRes.ok) notFound();
 
   const info = (await infoRes.json()) as TenantInfo;
   const services = (servicesRes.ok ? await servicesRes.json() : []) as PublicService[];
+  const branding = (brandingRes.ok ? await brandingRes.json() : { logoUrl: null, primaryColor: '#7c3aed' }) as TenantBranding;
 
-  return <BookingFlow slug={slug} info={info} services={services} />;
+  return <BookingFlow slug={slug} info={info} services={services} branding={branding} />;
 }

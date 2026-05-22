@@ -70,7 +70,10 @@ export default function AdminTenantsPage() {
                 <th className="text-left px-5 py-3.5 font-medium">Workspace</th>
                 <th className="text-left px-5 py-3.5 font-medium">Plano</th>
                 <th className="text-left px-5 py-3.5 font-medium">Estado</th>
-                <th className="text-left px-5 py-3.5 font-medium">Utilizadores</th>
+                <th className="text-left px-5 py-3.5 font-medium">MRR</th>
+                <th className="text-left px-5 py-3.5 font-medium">WA</th>
+                <th className="text-left px-5 py-3.5 font-medium">Msgs</th>
+                <th className="text-left px-5 py-3.5 font-medium">Agend.</th>
                 <th className="text-left px-5 py-3.5 font-medium">Criado em</th>
                 <th className="px-5 py-3.5" />
               </tr>
@@ -114,7 +117,16 @@ export default function AdminTenantsPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-5 py-4 text-white/50">{t._count.users}</td>
+                  <td className="px-5 py-4 text-white/70 font-medium">
+                    {t.mrr > 0 ? `€${t.mrr}` : <span className="text-white/25">—</span>}
+                  </td>
+                  <td className="px-5 py-4">
+                    {t.whatsappPhoneNumberId
+                      ? <span className="text-green-400 text-xs font-medium">✓ Ligado</span>
+                      : <span className="text-white/25 text-xs">—</span>}
+                  </td>
+                  <td className="px-5 py-4 text-white/50 tabular-nums">{t._count.messages.toLocaleString('pt-PT')}</td>
+                  <td className="px-5 py-4 text-white/50 tabular-nums">{t._count.appointments}</td>
                   <td className="px-5 py-4 text-white/40">{formatDate(t.createdAt)}</td>
                   <td className="px-5 py-4 text-right">
                     {editId === t.id ? (

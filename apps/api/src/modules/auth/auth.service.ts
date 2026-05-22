@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
+import { CloudflareService } from '../cloudflare/cloudflare.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginResponseDto } from './dto/auth-response.dto';
@@ -22,6 +24,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly email: EmailService,
+    private readonly cloudflare: CloudflareService,
   ) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto & { refreshToken: string }> {
@@ -152,6 +156,9 @@ export class AuthService {
       this.signRefreshToken(payload),
     ]);
 
+    void this.email.sendWelcome(user.email, user.name, tenant.slug);
+    void this.cloudflare.createSubdomain(tenant.slug);
+
     return {
       accessToken,
       refreshToken,
@@ -170,16 +177,34 @@ export class AuthService {
       { secret: this.configService.get<string>('app.jwt.secret'), expiresIn: '1h' },
     );
 
-    // In development, return the reset URL directly (no email sending configured yet)
-    if (this.configService.get<string>('app.nodeEnv') === 'development' || process.env['NODE_ENV'] === 'development') {
-      return {
-        message: genericMessage,
-        resetUrl: `http://localhost:3000/reset-password?token=${resetToken}`,
-      };
+    void this.email.sendPasswordReset(user.email, user.name, resetToken);
+
+    const isDev = process.env['NODE_ENV'] === 'development';
+    return {
+      message: genericMessage,
+      ...(isDev && { resetUrl: `http://localhost:3000/reset-password?token=${resetToken}` }),
+    };
+  }
+
+  async updateProfile(
+    userId: string,
+    data: { name?: string; currentPassword?: string; newPassword?: string },
+  ): Promise<{ id: string; name: string; email: string }> {
+    const user = await this.usersService.findByIdOrThrow(userId);
+
+    if (data.currentPassword && data.newPassword) {
+      const match = await bcrypt.compare(data.currentPassword, user.password);
+      if (!match) throw new UnauthorizedException('Password actual incorrecta');
+      const hashed = await bcrypt.hash(data.newPassword, 12);
+      await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
     }
 
-    // TODO: send email via Resend/Mailgun
-    return { message: genericMessage };
+    if (data.name) {
+      await this.prisma.user.update({ where: { id: userId }, data: { name: data.name } });
+    }
+
+    const updated = await this.usersService.findByIdOrThrow(userId);
+    return { id: updated.id, name: updated.name, email: updated.email };
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {

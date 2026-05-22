@@ -37,3 +37,12 @@ export async function updateTeamMember(
 export async function removeTeamMember(id: string): Promise<void> {
   await api.delete(`/users/${id}`);
 }
+
+export async function updateProfile(body: {
+  name?: string;
+  currentPassword?: string;
+  newPassword?: string;
+}): Promise<{ id: string; name: string; email: string }> {
+  const { data } = await api.patch<{ id: string; name: string; email: string }>('/auth/profile', body);
+  return data;
+}

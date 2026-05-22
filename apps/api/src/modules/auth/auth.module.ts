@@ -9,6 +9,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { CloudflareModule } from '../cloudflare/cloudflare.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
     JwtModule.register({}), // secrets configurados por strategy
     UsersModule,
     PrismaModule,
+    CloudflareModule,
   ],
   controllers: [AuthController],
   providers: [

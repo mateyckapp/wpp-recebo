@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBoard, moveConversation, type KanbanConversation } from '@/lib/kanban';
 import { KanbanColumn } from './kanban-column';
 import { ConversationCard } from './conversation-card';
+import { getSocket } from '@/lib/socket';
 
 interface KanbanBoardProps {
   onConversationSelect: (id: string) => void;
@@ -26,8 +27,15 @@ export function KanbanBoard({ onConversationSelect }: KanbanBoardProps) {
   const { data: columns = [], isLoading, error } = useQuery({
     queryKey: ['kanban-board'],
     queryFn: fetchBoard,
-    refetchInterval: 3_000,
+    refetchInterval: 60_000,
   });
+
+  useEffect(() => {
+    const socket = getSocket();
+    const refresh = () => void queryClient.invalidateQueries({ queryKey: ['kanban-board'] });
+    socket.on('conversation_updated', refresh);
+    return () => { socket.off('conversation_updated', refresh); };
+  }, [queryClient]);
 
   const moveMutation = useMutation({
     mutationFn: ({ conversationId, columnId }: { conversationId: string; columnId: string }) =>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchConversations, type Conversation } from '@/lib/conversations';
 import { ConversationPanel } from '@/components/kanban/conversation-panel';
+import { getSocket } from '@/lib/socket';
 
 const STATUSES = [
   { value: 'OPEN', label: 'Abertas' },
@@ -108,17 +109,25 @@ export default function ConversationsPage(): React.ReactElement {
   const [status, setStatus] = useState('OPEN');
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['conversations', status, search],
     queryFn: () => fetchConversations({ status, search: search || undefined }),
-    refetchInterval: 3_000,
+    refetchInterval: 30_000,
   });
+
+  useEffect(() => {
+    const socket = getSocket();
+    const refresh = () => void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    socket.on('conversation_updated', refresh);
+    return () => { socket.off('conversation_updated', refresh); };
+  }, [queryClient]);
 
   const conversations = data?.items ?? [];
 
   return (
-    <div className="flex h-full gap-0 overflow-hidden -m-6">
+    <div className="flex-1 flex min-h-0 overflow-hidden">
       {/* Painel esquerdo — lista */}
       <div className={`flex flex-col border-r border-white/[0.06] ${selectedId ? 'hidden md:flex md:w-80 lg:w-96' : 'w-full md:w-80 lg:w-96'}`}>
         {/* Cabeçalho */}

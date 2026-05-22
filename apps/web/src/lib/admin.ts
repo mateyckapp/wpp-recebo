@@ -12,9 +12,11 @@ export interface AdminTenant {
   plan: Plan;
   status: TenantStatus;
   createdAt: string;
+  mrr: number;
+  whatsappPhoneNumberId: string | null;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
-  _count: { users: number; appointments: number };
+  _count: { users: number; appointments: number; messages: number };
 }
 
 export interface AdminStats {
@@ -27,6 +29,11 @@ export interface AdminStats {
   newThisMonth: number;
   newLast30Days: number;
   planDistribution: { plan: Plan; count: number; revenue: number }[];
+  totalMessages: number;
+  messagesToday: number;
+  totalAppointments: number;
+  appointmentsThisWeek: number;
+  activeWhatsapp: number;
 }
 
 export interface BillingOverview {

@@ -5,6 +5,8 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
+import { PlanLimitsService } from '../plan-limits/plan-limits.service';
 import { User, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
@@ -21,7 +23,11 @@ const SAFE_SELECT = {
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly email: EmailService,
+    private readonly planLimits: PlanLimitsService,
+  ) {}
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { id } });
@@ -56,11 +62,13 @@ export class UsersService {
     tenantId: string,
     data: { name: string; email: string; role: UserRole; password: string },
   ) {
+    await this.planLimits.assertCanAddAgent(tenantId);
+
     const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
     if (existing) throw new ConflictException('Este email já está registado');
 
     const hash = await bcrypt.hash(data.password, 10);
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         tenantId,
         name: data.name,
@@ -69,8 +77,19 @@ export class UsersService {
         password: hash,
         isActive: true,
       },
-      select: SAFE_SELECT,
+      select: { ...SAFE_SELECT, tenant: { select: { name: true, slug: true } } },
     });
+
+    void this.email.sendAgentInvitation(
+      data.email,
+      data.name,
+      user.tenant.name,
+      data.password,
+      user.tenant.slug,
+    );
+
+    const { tenant: _t, ...safeUser } = user;
+    return safeUser;
   }
 
   async updateAgent(

@@ -35,9 +35,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const { refreshToken } = (await res.json()) as { refreshToken: string };
-    console.log('[auth/sync] refreshToken obtido, a definir cookie e a redirecionar para:', `${baseUrl}${next}`);
 
-    const response = NextResponse.redirect(`${baseUrl}${next}`);
+    // Redireciona para /auth/hydrate que armazena o access token no sessionStorage
+    // do subdomínio correto antes de entrar no dashboard — evita token stale de sessões anteriores
+    const hydrateUrl = `${baseUrl}/auth/hydrate?at=${encodeURIComponent(at)}&next=${encodeURIComponent(next)}`;
+    console.log('[auth/sync] refreshToken obtido, a redirecionar para hydrate:', hydrateUrl);
+
+    const response = NextResponse.redirect(hydrateUrl);
     response.cookies.set('refresh_token', refreshToken, {
       httpOnly: true,
       sameSite: 'lax',

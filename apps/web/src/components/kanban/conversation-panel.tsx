@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchMessages, sendMessage, markConversationRead, type Message } from '@/lib/messages';
 import { fetchTemplates, scheduleMessage, type MessageTemplate } from '@/lib/templates';
+import { getSocket } from '@/lib/socket';
 
 interface ConversationPanelProps {
   conversationId: string;
@@ -188,8 +189,24 @@ export function ConversationPanel({ conversationId, onClose }: ConversationPanel
   const { data, isLoading } = useQuery({
     queryKey: ['messages', conversationId],
     queryFn: () => fetchMessages(conversationId),
-    refetchInterval: 5_000,
+    refetchInterval: 60_000,
   });
+
+  useEffect(() => {
+    const socket = getSocket();
+    const handleNewMessage = (payload: { conversationId: string; message: Message }) => {
+      if (payload.conversationId !== conversationId) return;
+      queryClient.setQueryData(
+        ['messages', conversationId],
+        (old: typeof data) =>
+          old
+            ? { ...old, items: [...old.items.filter((m) => m.id !== payload.message.id), payload.message] }
+            : { items: [payload.message], nextCursor: null, hasMore: false },
+      );
+    };
+    socket.on('new_message', handleNewMessage);
+    return () => { socket.off('new_message', handleNewMessage); };
+  }, [conversationId, queryClient, data]);
 
   const { data: templates = [] } = useQuery({
     queryKey: ['templates'],
@@ -204,7 +221,7 @@ export function ConversationPanel({ conversationId, onClose }: ConversationPanel
         ['messages', conversationId],
         (old: typeof data) =>
           old
-            ? { ...old, items: [...old.items, newMsg] }
+            ? { ...old, items: [...old.items.filter((m) => m.id !== newMsg.id), newMsg] }
             : { items: [newMsg], nextCursor: null, hasMore: false },
       );
       void queryClient.invalidateQueries({ queryKey: ['kanban-board'] });

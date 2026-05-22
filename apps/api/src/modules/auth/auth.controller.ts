@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Body,
   Res,
   HttpCode,
@@ -9,6 +10,7 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
+import { IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
 import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -20,6 +22,23 @@ import { Public } from './decorators/public.decorator';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { JwtPayload } from '@wpp-recebo/shared';
+
+class UpdateProfileDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  currentPassword?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  newPassword?: string;
+}
 
 const isDev = process.env['NODE_ENV'] !== 'production';
 // Em dev: domain='localhost' cobre demo.localhost, empresa.localhost, etc.
@@ -124,5 +143,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Obter utilizador autenticado' })
   me(@CurrentUser() user: JwtPayload) {
     return this.authService.getMe(user);
+  }
+
+  @Patch('profile')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Actualizar perfil do utilizador autenticado' })
+  updateProfile(@CurrentUser() user: JwtPayload, @Body() dto: UpdateProfileDto) {
+    return this.authService.updateProfile(user.sub, dto);
   }
 }

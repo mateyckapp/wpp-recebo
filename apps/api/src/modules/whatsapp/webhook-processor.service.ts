@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { WhatsappService } from './whatsapp.service';
 import { AiService } from '../ai/ai.service';
+import { WebsocketGateway } from '../websocket/websocket.gateway';
 import type {
   WhatsappWebhookPayload,
   WhatsappMessage,
@@ -18,6 +19,7 @@ export class WebhookProcessorService {
     private readonly prisma: PrismaService,
     private readonly whatsapp: WhatsappService,
     private readonly ai: AiService,
+    private readonly ws: WebsocketGateway,
   ) {}
 
   async process(payload: WhatsappWebhookPayload): Promise<void> {
@@ -116,7 +118,7 @@ export class WebhookProcessorService {
       // 3. Guardar mensagem
       const { type, content } = this.extractMessageContent(message);
 
-      await this.prisma.message.create({
+      const savedMessage = await this.prisma.message.create({
         data: {
           tenantId,
           conversationId: conversation.id,
@@ -126,15 +128,37 @@ export class WebhookProcessorService {
           content,
           status: MessageStatus.DELIVERED,
         },
+        select: {
+          id: true,
+          direction: true,
+          type: true,
+          content: true,
+          mediaUrl: true,
+          status: true,
+          sentByAI: true,
+          createdAt: true,
+        },
       });
 
       // 4. Atualizar última mensagem da conversa
-      await this.prisma.conversation.update({
+      const updatedConv = await this.prisma.conversation.update({
         where: { id: conversation.id },
         data: {
           lastMessageAt: new Date(),
           unreadCount: { increment: 1 },
         },
+        select: { id: true, unreadCount: true, lastMessageAt: true },
+      });
+
+      // Emitir eventos em tempo real
+      this.ws.emitToTenant(tenantId, 'new_message', {
+        conversationId: conversation.id,
+        message: savedMessage,
+      });
+      this.ws.emitToTenant(tenantId, 'conversation_updated', {
+        conversationId: conversation.id,
+        unreadCount: updatedConv.unreadCount,
+        lastMessageAt: updatedConv.lastMessageAt,
       });
 
       // 5. Marcar como lida no WhatsApp
@@ -194,7 +218,7 @@ export class WebhookProcessorService {
       );
 
       // Guardar mensagem de resposta da IA na base de dados
-      await this.prisma.message.create({
+      const aiMessage = await this.prisma.message.create({
         data: {
           tenantId,
           conversationId,
@@ -205,11 +229,26 @@ export class WebhookProcessorService {
           sentByAI: true,
           status: MessageStatus.SENT,
         },
+        select: {
+          id: true,
+          direction: true,
+          type: true,
+          content: true,
+          mediaUrl: true,
+          status: true,
+          sentByAI: true,
+          createdAt: true,
+        },
       });
 
       await this.prisma.conversation.update({
         where: { id: conversationId },
         data: { lastMessageAt: new Date() },
+      });
+
+      this.ws.emitToTenant(tenantId, 'new_message', {
+        conversationId,
+        message: aiMessage,
       });
 
       this.logger.log(`IA respondeu à conversa ${conversationId} (${result.tokensInput}+${result.tokensOutput} tokens)`);

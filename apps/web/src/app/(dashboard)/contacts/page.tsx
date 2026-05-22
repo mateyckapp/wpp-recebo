@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchContacts,
@@ -14,6 +14,7 @@ import {
   type Contact,
   type ContactGroup,
 } from '@/lib/contacts';
+import { api } from '@/lib/api';
 
 function initials(name: string | null, phone: string): string {
   if (name) return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
@@ -384,12 +385,157 @@ function ContactRow({ contact, selected, onClick }: { contact: Contact; selected
   );
 }
 
+// ─── Importação CSV ───────────────────────────────────────────────────────────
+
+function parseCsv(text: string): Array<{ phoneNumber: string; name?: string; email?: string }> {
+  const lines = text.trim().split(/\r?\n/);
+  if (!lines.length) return [];
+
+  const headers = lines[0]!.split(/[,;]/).map((h) => h.trim().toLowerCase().replace(/['"]/g, ''));
+  const phoneIdx = headers.findIndex((h) => ['phone', 'phonenumber', 'telefone', 'telemovel', 'numero'].includes(h));
+  const nameIdx = headers.findIndex((h) => ['name', 'nome'].includes(h));
+  const emailIdx = headers.findIndex((h) => ['email', 'mail', 'correio'].includes(h));
+
+  if (phoneIdx === -1) return [];
+
+  return lines.slice(1).map((line) => {
+    const cells = line.split(/[,;]/).map((c) => c.trim().replace(/['"]/g, ''));
+    return {
+      phoneNumber: cells[phoneIdx] ?? '',
+      ...(nameIdx >= 0 && cells[nameIdx] ? { name: cells[nameIdx] } : {}),
+      ...(emailIdx >= 0 && cells[emailIdx] ? { email: cells[emailIdx] } : {}),
+    };
+  }).filter((r) => r.phoneNumber.length >= 7);
+}
+
+function CsvImportModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [rows, setRows] = useState<Array<{ phoneNumber: string; name?: string; email?: string }>>([]);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState<{ created: number; skipped: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const parsed = parseCsv(text);
+      if (!parsed.length) {
+        setError('Não foi possível ler o ficheiro. Verifica se tem uma coluna "phone" ou "nome".');
+      } else {
+        setRows(parsed);
+        setError('');
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  };
+
+  const handleImport = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.post<{ created: number; skipped: number }>('/contacts/import', { rows });
+      setResult(data);
+      onSuccess();
+    } catch {
+      setError('Erro ao importar. Tenta novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#0d0d14] border border-white/[0.1] rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-gray-100">Importar contactos via CSV</h3>
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-300 transition-colors">✕</button>
+        </div>
+
+        {!result ? (
+          <>
+            <p className="text-xs text-gray-500">
+              O ficheiro CSV deve ter pelo menos uma coluna chamada <code className="text-brand-400">phone</code> (ou <code className="text-brand-400">telefone</code>).
+              Colunas opcionais: <code className="text-brand-400">name</code>, <code className="text-brand-400">email</code>.
+            </p>
+
+            <div
+              className="border-2 border-dashed border-white/[0.1] rounded-xl p-6 text-center cursor-pointer hover:border-brand-500/40 transition-colors"
+              onClick={() => fileRef.current?.click()}
+            >
+              <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleFile} />
+              <p className="text-sm text-gray-400">Clica para seleccionar o ficheiro CSV</p>
+              {rows.length > 0 && (
+                <p className="text-xs text-emerald-400 mt-2">{rows.length} contactos detectados</p>
+              )}
+            </div>
+
+            {rows.length > 0 && (
+              <div className="rounded-xl border border-white/[0.08] overflow-hidden">
+                <div className="grid grid-cols-3 px-3 py-2 bg-white/[0.04] border-b border-white/[0.06]">
+                  <span className="text-[10px] font-medium text-gray-500 uppercase">Telefone</span>
+                  <span className="text-[10px] font-medium text-gray-500 uppercase">Nome</span>
+                  <span className="text-[10px] font-medium text-gray-500 uppercase">Email</span>
+                </div>
+                {rows.slice(0, 5).map((r, i) => (
+                  <div key={i} className="grid grid-cols-3 px-3 py-2 border-b border-white/[0.04] last:border-0">
+                    <span className="text-xs text-gray-300 font-mono truncate">{r.phoneNumber}</span>
+                    <span className="text-xs text-gray-400 truncate">{r.name ?? '—'}</span>
+                    <span className="text-xs text-gray-400 truncate">{r.email ?? '—'}</span>
+                  </div>
+                ))}
+                {rows.length > 5 && (
+                  <div className="px-3 py-2 text-center">
+                    <span className="text-xs text-gray-600">+{rows.length - 5} mais…</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {error && <p className="text-xs text-red-400">{error}</p>}
+
+            <div className="flex gap-2 justify-end pt-1">
+              <button onClick={onClose} className="text-sm px-4 py-2 border border-white/[0.1] text-gray-400 rounded-xl hover:bg-white/[0.04] transition-colors">
+                Cancelar
+              </button>
+              <button
+                onClick={handleImport}
+                disabled={!rows.length || loading}
+                className="text-sm px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-500 disabled:opacity-50 transition-colors"
+              >
+                {loading ? 'A importar...' : `Importar ${rows.length} contactos`}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-4 space-y-3">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center mx-auto text-2xl">
+              ✓
+            </div>
+            <p className="font-semibold text-gray-100">Importação concluída</p>
+            <p className="text-sm text-gray-400">
+              <strong className="text-emerald-400">{result.created}</strong> criados ·{' '}
+              <strong className="text-gray-500">{result.skipped}</strong> ignorados (já existentes ou inválidos)
+            </p>
+            <button onClick={onClose} className="text-sm px-6 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-500 transition-colors">
+              Fechar
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Página principal ─────────────────────────────────────────────────────────
 
 export default function ContactsPage(): React.ReactElement {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   const { data: groupsData = [] } = useQuery({
     queryKey: ['groups'],
@@ -405,7 +551,7 @@ export default function ContactsPage(): React.ReactElement {
   const contacts = data?.items ?? [];
 
   return (
-    <div className="flex h-full overflow-hidden -m-6">
+    <div className="flex-1 flex min-h-0 overflow-hidden">
       {/* Painel de grupos */}
       <GroupsPanel
         groups={groupsData}
@@ -418,7 +564,15 @@ export default function ContactsPage(): React.ReactElement {
         <div className="px-4 pt-5 pb-3 border-b border-white/[0.06] flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-semibold text-gray-100">Contactos</h1>
-            {data && <span className="text-xs text-gray-500">{data.total} total</span>}
+            <div className="flex items-center gap-2">
+              {data && <span className="text-xs text-gray-500">{data.total} total</span>}
+              <button
+                onClick={() => setShowImport(true)}
+                className="text-xs px-2.5 py-1.5 bg-brand-600/20 text-brand-400 border border-brand-500/20 rounded-lg hover:bg-brand-600/30 transition-colors"
+              >
+                Importar CSV
+              </button>
+            </div>
           </div>
           <div className="relative">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -451,6 +605,14 @@ export default function ContactsPage(): React.ReactElement {
           ))}
         </div>
       </div>
+
+      {/* Modal importação CSV */}
+      {showImport && (
+        <CsvImportModal
+          onClose={() => setShowImport(false)}
+          onSuccess={() => void queryClient.invalidateQueries({ queryKey: ['contacts'] })}
+        />
+      )}
 
       {/* Painel de detalhe */}
       {selectedId ? (

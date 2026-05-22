@@ -77,6 +77,38 @@ export class ContactsService {
     });
   }
 
+  async importContacts(
+    tenantId: string,
+    rows: Array<{ phoneNumber: string; name?: string; email?: string }>,
+  ): Promise<{ created: number; skipped: number }> {
+    let created = 0;
+    let skipped = 0;
+
+    for (const row of rows) {
+      if (!row.phoneNumber) { skipped++; continue; }
+      try {
+        await this.prisma.contact.upsert({
+          where: { tenantId_phoneNumber: { tenantId, phoneNumber: row.phoneNumber } },
+          update: {
+            ...(row.name ? { name: row.name } : {}),
+            ...(row.email ? { email: row.email } : {}),
+          },
+          create: {
+            tenantId,
+            phoneNumber: row.phoneNumber,
+            name: row.name ?? null,
+            email: row.email ?? null,
+          },
+        });
+        created++;
+      } catch {
+        skipped++;
+      }
+    }
+
+    return { created, skipped };
+  }
+
   // ─── Grupos ────────────────────────────────────────────────────────────────
 
   async findAllGroups(tenantId: string) {

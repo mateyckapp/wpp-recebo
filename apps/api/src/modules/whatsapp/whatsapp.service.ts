@@ -73,6 +73,33 @@ export class WhatsappService {
     return this.sendRequest(phoneNumberId, payload, accessToken);
   }
 
+  async sendTemplateMessage(
+    phoneNumberId: string,
+    to: string,
+    templateName: string,
+    languageCode: string,
+    parameters: string[],
+    accessToken: string,
+  ): Promise<string> {
+    const payload = {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to: this.normalizePhone(to),
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: languageCode },
+        components: [
+          {
+            type: 'body',
+            parameters: parameters.map((text) => ({ type: 'text', text })),
+          },
+        ],
+      },
+    };
+    return this.sendRequest(phoneNumberId, payload, accessToken);
+  }
+
   async markAsRead(
     phoneNumberId: string,
     messageId: string,

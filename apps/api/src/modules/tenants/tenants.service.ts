@@ -84,6 +84,29 @@ export class TenantsService {
     };
   }
 
+  async getBranding(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { logoUrl: true, primaryColor: true, name: true },
+    });
+    return {
+      logoUrl: tenant?.logoUrl ?? null,
+      primaryColor: tenant?.primaryColor ?? '#7c3aed',
+      name: tenant?.name ?? '',
+    };
+  }
+
+  async updateBranding(tenantId: string, data: { logoUrl?: string | null; primaryColor?: string }) {
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        ...(data.logoUrl !== undefined ? { logoUrl: data.logoUrl } : {}),
+        ...(data.primaryColor ? { primaryColor: data.primaryColor } : {}),
+      },
+    });
+    return this.getBranding(tenantId);
+  }
+
   async testWhatsappConnection(tenantId: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },

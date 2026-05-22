@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Headers, Req } from '@nestjs/common';
 import { RawBodyRequest } from '@nestjs/common';
 import { Request } from 'express';
 import { BillingService } from './billing.service';
+import { PlanLimitsService } from '../plan-limits/plan-limits.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import type { JwtPayload } from '@wpp-recebo/shared';
@@ -13,11 +15,30 @@ class CreateCheckoutDto {
 
 @Controller('billing')
 export class BillingController {
-  constructor(private readonly billing: BillingService) {}
+  constructor(
+    private readonly billing: BillingService,
+    private readonly planLimits: PlanLimitsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Get()
   getBilling(@CurrentUser() user: JwtPayload) {
     return this.billing.getBilling(user.tenantId);
+  }
+
+  @Get('limits')
+  async getLimits(@CurrentUser() user: JwtPayload) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: user.tenantId },
+      select: { plan: true, _count: { select: { users: { where: { isActive: true } } } } },
+    });
+    if (!tenant) return {};
+    const limits = this.planLimits.getLimits(tenant.plan);
+    return {
+      plan: tenant.plan,
+      limits,
+      usage: { agents: tenant._count.users },
+    };
   }
 
   @Post('checkout')

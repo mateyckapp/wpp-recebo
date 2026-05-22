@@ -43,6 +43,17 @@ export default function RegisterPage(): React.ReactElement {
   const router = useRouter();
   const { setUser } = useAuthStore();
   const [subdomainState, setSubdomainState] = useState<SubdomainState>({ status: 'idle' });
+
+  // Bloqueia acesso ao registo em subdomínios — só existe no domínio raiz
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const parts = window.location.hostname.split('.');
+    if (parts.length > 1) {
+      const root = parts.slice(1).join('.');
+      const port = window.location.port ? `:${window.location.port}` : '';
+      window.location.replace(`${window.location.protocol}//${root}${port}/login`);
+    }
+  }, []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -106,7 +117,7 @@ export default function RegisterPage(): React.ReactElement {
     try {
       const { data: res } = await api.post<{
         accessToken: string;
-        user: { id: string; email: string; name: string; role: UserRole; tenantId: string };
+        user: { id: string; email: string; name: string; role: UserRole; tenantId: string; tenantSlug: string };
       }>('/auth/register', data);
 
       sessionStorage.setItem('access_token', res.accessToken);

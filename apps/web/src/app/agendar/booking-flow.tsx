@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { TenantInfo, PublicService } from './page';
+import type { TenantInfo, PublicService, TenantBranding } from './page';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -9,6 +9,7 @@ interface Professional { id: string; name: string; specialty: string | null }
 interface Slot { time: string; professionalId: string; professionalName: string; dateTime: string }
 interface BookingResult {
   id: string;
+  cancelToken: string | null;
   scheduledAt: string;
   service: { name: string; duration: number };
   professional: { name: string };
@@ -138,7 +139,8 @@ function Progress({ current }: { current: Step }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export function BookingFlow({ slug, info, services }: { slug: string; info: TenantInfo; services: PublicService[] }) {
+export function BookingFlow({ slug, info, services, branding }: { slug: string; info: TenantInfo; services: PublicService[]; branding?: TenantBranding }) {
+  const color = branding?.primaryColor ?? '#7c3aed';
   const [step, setStep] = useState<Step>('service');
   const [service, setService] = useState<PublicService | null>(null);
   const [professional, setProfessional] = useState<Professional | null>(null);
@@ -227,12 +229,22 @@ export function BookingFlow({ slug, info, services }: { slug: string; info: Tena
       {/* Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-base font-semibold text-gray-900">{info.name}</h1>
-            <p className="text-xs text-gray-400">Agendamento online</p>
+          <div className="flex items-center gap-3">
+            {branding?.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={branding.logoUrl} alt={info.name} className="w-8 h-8 object-contain rounded-lg" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            ) : (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style={{ backgroundColor: color }}>
+                {info.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <h1 className="text-base font-semibold text-gray-900">{info.name}</h1>
+              <p className="text-xs text-gray-400">Agendamento online</p>
+            </div>
           </div>
           {step !== 'done' && (
-            <span className="text-xs font-medium text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ color, backgroundColor: `${color}18` }}>
               {STEP_LABELS[STEPS.indexOf(step)]}
             </span>
           )}
@@ -498,6 +510,24 @@ export function BookingFlow({ slug, info, services }: { slug: string; info: Tena
             >
               Fazer outro agendamento
             </button>
+
+            {result.cancelToken && (
+              <div className="flex items-center justify-center gap-3 text-center text-xs text-gray-400">
+                <a
+                  href={`/agendar/reagendar?token=${result.cancelToken}`}
+                  className="underline hover:text-gray-600 transition-colors"
+                >
+                  Reagendar
+                </a>
+                <span>·</span>
+                <a
+                  href={`/agendar/cancelar?token=${result.cancelToken}`}
+                  className="underline hover:text-gray-600 transition-colors"
+                >
+                  Cancelar
+                </a>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
+import { WebsocketGateway } from '../websocket/websocket.gateway';
 import { MessageDirection, MessageStatus, MessageType } from '@prisma/client';
 
 @Injectable()
@@ -8,6 +9,7 @@ export class MessagesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly whatsapp: WhatsappService,
+    private readonly ws: WebsocketGateway,
   ) {}
 
   async getMessages(conversationId: string, tenantId: string, cursor?: string, limit = 30) {
@@ -102,6 +104,13 @@ export class MessagesService {
     await this.prisma.conversation.update({
       where: { id: conversationId },
       data: { lastMessageAt: new Date() },
+    });
+
+    this.ws.emitToTenant(tenantId, 'new_message', { conversationId, message });
+    this.ws.emitToTenant(tenantId, 'conversation_updated', {
+      conversationId,
+      unreadCount: 0,
+      lastMessageAt: new Date(),
     });
 
     return message;

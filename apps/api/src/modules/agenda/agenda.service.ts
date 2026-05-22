@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppointmentStatus } from '@prisma/client';
+import { AgendaNotificationsService } from '../agenda-notifications/agenda-notifications.service';
 
 export interface AvailableSlot {
   time: string; // "10:00"
@@ -11,7 +12,10 @@ export interface AvailableSlot {
 
 @Injectable()
 export class AgendaService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: AgendaNotificationsService,
+  ) {}
 
   // ── Services ──────────────────────────────────────────────────────────────
 
@@ -207,7 +211,7 @@ export class AgendaService {
     scheduledAt: string; // ISO string or "YYYY-MM-DDTHH:mm:00"
     notes?: string;
   }) {
-    return this.prisma.appointment.create({
+    const appointment = await this.prisma.appointment.create({
       data: {
         tenantId: data.tenantId,
         contactId: data.contactId,
@@ -219,6 +223,17 @@ export class AgendaService {
       },
       include: { service: true, professional: true, contact: true },
     });
+
+    void this.notifications.scheduleForAppointment({
+      id: appointment.id,
+      tenantId: appointment.tenantId,
+      scheduledAt: appointment.scheduledAt,
+      contact: appointment.contact,
+      service: appointment.service,
+      professional: appointment.professional,
+    });
+
+    return appointment;
   }
 
   async getAppointments(tenantId: string, filters?: { date?: string; startDate?: string; endDate?: string; status?: AppointmentStatus; professionalId?: string }) {
@@ -255,6 +270,9 @@ export class AgendaService {
   }
 
   async updateAppointmentStatus(id: string, tenantId: string, status: AppointmentStatus) {
+    if (status === AppointmentStatus.CANCELLED) {
+      void this.notifications.cancelForAppointment(id);
+    }
     return this.prisma.appointment.update({
       where: { id, tenantId },
       data: { status },

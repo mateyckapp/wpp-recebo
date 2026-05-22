@@ -720,6 +720,12 @@ export default function AgendaPage() {
             Nova marcação
           </button>
           <Link
+            href="/agenda/notificacoes"
+            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+          >
+            Notificações
+          </Link>
+          <Link
             href="/agenda/configurar"
             className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
           >

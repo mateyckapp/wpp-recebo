@@ -20,6 +20,10 @@ import { BillingModule } from './modules/billing/billing.module';
 import { AgendaModule } from './modules/agenda/agenda.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { PublicAgendaModule } from './modules/public-agenda/public-agenda.module';
+import { EmailModule } from './modules/email/email.module';
+import { WebsocketModule } from './modules/websocket/websocket.module';
+import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { appConfig } from './config/app.config';
 
@@ -55,6 +59,10 @@ import { appConfig } from './config/app.config';
     AgendaModule,
     AdminModule,
     PublicAgendaModule,
+    EmailModule,
+    WebsocketModule,
+    PlanLimitsModule,
+    AnalyticsModule,
   ],
   providers: [
     {

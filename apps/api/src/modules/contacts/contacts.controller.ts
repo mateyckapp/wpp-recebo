@@ -2,9 +2,23 @@ import { Controller, Get, Post, Patch, Delete, Param, Body, Query } from '@nestj
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ContactsService } from './contacts.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { IsOptional, IsString, IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsNotEmpty, MaxLength, IsArray, ValidateNested, IsPhoneNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 import type { JwtPayload } from '@wpp-recebo/shared';
 import { CreateContactDto } from './contacts.service';
+
+class ImportRowDto {
+  @IsString() @IsNotEmpty() declare phoneNumber: string;
+  @IsOptional() @IsString() name?: string;
+  @IsOptional() @IsEmail() email?: string;
+}
+
+class ImportContactsDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportRowDto)
+  declare rows: ImportRowDto[];
+}
 
 class ListContactsQuery {
   @IsOptional() @IsString() search?: string;
@@ -50,6 +64,12 @@ export class ContactsController {
   @ApiOperation({ summary: 'Criar contacto' })
   create(@Body() dto: CreateContactDto, @CurrentUser() user: JwtPayload) {
     return this.contacts.createContact(user.tenantId, dto);
+  }
+
+  @Post('import')
+  @ApiOperation({ summary: 'Importar contactos via CSV (JSON array)' })
+  import(@Body() dto: ImportContactsDto, @CurrentUser() user: JwtPayload) {
+    return this.contacts.importContacts(user.tenantId, dto.rows);
   }
 
   @Get(':id')

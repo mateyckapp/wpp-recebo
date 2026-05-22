@@ -82,6 +82,21 @@ enum AppointmentStatus {
   COMPLETED
 }
 
+enum AppointmentNotificationType {
+  CONFIRMATION
+  REMINDER_2D
+  REMINDER_1D
+  REMINDER_2H
+  REMINDER_1H
+}
+
+enum AppointmentNotificationJobStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
 // ─── Modelos ──────────────────────────────────────────────────────────────────
 
 model Tenant {
@@ -96,6 +111,8 @@ model Tenant {
   whatsappAccessToken        String?
   stripeCustomerId           String?
   stripeSubscriptionId       String?
+  logoUrl                    String?
+  primaryColor               String?
   createdAt                  DateTime     @default(now())
   updatedAt                  DateTime     @updatedAt
 
@@ -112,9 +129,11 @@ model Tenant {
   aiConfig           AIConfig?
   aiInteractions     AIInteraction[]
   auditLogs          AuditLog[]
-  services           Service[]
-  professionals      Professional[]
-  appointments       Appointment[]
+  services              Service[]
+  professionals         Professional[]
+  appointments          Appointment[]
+  notificationConfig    AppointmentNotificationConfig?
+  notificationJobs      AppointmentNotificationJob[]
 
   @@map("tenants")
 }
@@ -504,6 +523,51 @@ model AdminConfig {
   @@map("admin_configs")
 }
 
+model AppointmentNotificationConfig {
+  id                       String   @id @default(cuid())
+  tenantId                 String   @unique
+  tenant                   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  confirmationEnabled      Boolean  @default(true)
+  confirmationDelayMinutes Int      @default(2)
+  confirmationTemplate     String   @default("appointment_confirmation")
+
+  reminder2dEnabled        Boolean  @default(true)
+  reminder2dTemplate       String   @default("appointment_reminder_2d")
+
+  reminder1dEnabled        Boolean  @default(true)
+  reminder1dTemplate       String   @default("appointment_reminder_1d")
+
+  reminder2hEnabled        Boolean  @default(true)
+  reminder2hTemplate       String   @default("appointment_reminder_2h")
+
+  reminder1hEnabled        Boolean  @default(true)
+  reminder1hTemplate       String   @default("appointment_reminder_1h")
+
+  updatedAt                DateTime @updatedAt
+
+  @@map("appointment_notification_configs")
+}
+
+model AppointmentNotificationJob {
+  id            String                           @id @default(cuid())
+  tenantId      String
+  tenant        Tenant                           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointmentId String
+  type          AppointmentNotificationType
+  scheduledAt   DateTime
+  sentAt        DateTime?
+  status        AppointmentNotificationJobStatus @default(PENDING)
+  phoneNumber   String
+  templateName  String
+  params        Json
+
+  @@index([status, scheduledAt])
+  @@index([appointmentId])
+  @@index([tenantId])
+  @@map("appointment_notification_jobs")
+}
+
 model Appointment {
   id             String            @id @default(cuid())
   tenantId       String
@@ -519,6 +583,7 @@ model Appointment {
   scheduledAt    DateTime
   status         AppointmentStatus @default(PENDING)
   notes          String?
+  cancelToken    String?           @unique
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
