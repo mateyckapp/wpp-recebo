@@ -10,6 +10,7 @@ ENV NEXT_PUBLIC_APP_DOMAIN=$NEXT_PUBLIC_APP_DOMAIN
 ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @wpp-recebo/shared build
 RUN pnpm --filter @wpp-recebo/web build
 
 FROM node:22-alpine AS runner

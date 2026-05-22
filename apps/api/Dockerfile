@@ -3,6 +3,7 @@ RUN npm install -g pnpm
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @wpp-recebo/shared build
 RUN pnpm --filter @wpp-recebo/api build
 
 FROM node:22-alpine AS runner
