@@ -15,6 +15,6 @@ COPY packages/ ./packages/
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
-RUN ./node_modules/.bin/prisma generate --schema=apps/api/prisma/schema.prisma
+RUN npx --yes prisma@5.22.0 generate --schema=apps/api/prisma/schema.prisma
 EXPOSE 3001
 CMD ["node", "apps/api/dist/main"]
