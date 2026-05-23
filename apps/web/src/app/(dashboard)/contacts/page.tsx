@@ -586,6 +586,37 @@ export default function ContactsPage(): React.ReactElement {
               className="w-full pl-9 pr-3 py-2 text-sm bg-white/[0.05] border border-white/[0.08] rounded-lg text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30 transition"
             />
           </div>
+
+          {/* Chips de grupos — visíveis apenas no mobile */}
+          {groupsData.length > 0 && (
+            <div className="md:hidden mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <button
+                onClick={() => { setSelectedGroupId(null); setSelectedId(null); }}
+                className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  !selectedGroupId
+                    ? 'bg-brand-600/20 border-brand-500/30 text-brand-400'
+                    : 'border-white/[0.1] text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                Todos
+              </button>
+              {groupsData.map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => { setSelectedGroupId(g.id); setSelectedId(null); }}
+                  className={`flex-shrink-0 flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    selectedGroupId === g.id
+                      ? 'border-transparent text-white'
+                      : 'border-white/[0.1] text-gray-500 hover:text-gray-300'
+                  }`}
+                  style={selectedGroupId === g.id ? { backgroundColor: g.color + '33', borderColor: g.color + '66', color: g.color } : {}}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: g.color }} />
+                  {g.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto">

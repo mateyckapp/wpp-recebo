@@ -704,33 +704,37 @@ export default function AgendaPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-white/[0.06] flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
-        <div>
-          <h1 className="text-xl font-semibold text-white">Agenda</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Gestão de marcações e horários</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleNewAppt}
-            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-500 transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Nova marcação
-          </button>
-          <Link
-            href="/agenda/notificacoes"
-            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
-          >
-            Notificações
-          </Link>
-          <Link
-            href="/agenda/configurar"
-            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
-          >
-            Configurar
-          </Link>
+      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-white/[0.06] flex-shrink-0">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-semibold text-white">Agenda</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Gestão de marcações e horários</p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <button
+              onClick={handleNewAppt}
+              className="flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-500 transition-colors"
+            >
+              <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="hidden sm:inline">Nova</span> marcação
+            </button>
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/agenda/notificacoes"
+                className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-2.5 py-2 text-xs font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+              >
+                Notif.
+              </Link>
+              <Link
+                href="/agenda/configurar"
+                className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-2.5 py-2 text-xs font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+              >
+                Config.
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
