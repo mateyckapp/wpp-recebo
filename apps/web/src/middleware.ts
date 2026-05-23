@@ -54,7 +54,7 @@ export function middleware(request: NextRequest): NextResponse {
 
   // ── Sem subdomínio (domínio raiz) ─────────────────────────────────────────
   if (!slug) {
-    const allowedWithoutTenant = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/no-workspace', '/lp'];
+    const allowedWithoutTenant = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/no-workspace', '/lp', '/trial-expired'];
     if (allowedWithoutTenant.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
       return NextResponse.next();
     }

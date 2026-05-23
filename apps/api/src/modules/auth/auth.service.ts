@@ -121,8 +121,9 @@ export class AuthService {
       throw new ConflictException('Email já registado');
     }
 
+    const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
     const tenant = await this.prisma.tenant.create({
-      data: { slug: dto.slug, name: dto.companyName, status: 'TRIAL', plan: 'START' },
+      data: { slug: dto.slug, name: dto.companyName, status: 'TRIAL', plan: 'START', trialEndsAt },
     });
 
     await this.prisma.kanbanColumn.createMany({

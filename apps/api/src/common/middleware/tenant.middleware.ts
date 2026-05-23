@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, NestMiddleware, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
 import { tenantStorage } from '../context/tenant.context';
@@ -28,15 +28,25 @@ export class TenantMiddleware implements NestMiddleware {
 
     const tenant = await this.prisma.tenant.findUnique({
       where: { slug },
-      select: { id: true, slug: true, status: true },
+      select: { id: true, slug: true, status: true, trialEndsAt: true },
     });
 
     if (!tenant) {
       throw new NotFoundException(`Tenant "${slug}" não encontrado`);
     }
 
+    if (tenant.status === 'TRIAL' && tenant.trialEndsAt && tenant.trialEndsAt < new Date()) {
+      throw new HttpException(
+        { message: 'O teu período de trial terminou. Subscreve um plano para continuar.', code: 'TRIAL_EXPIRED' },
+        HttpStatus.PAYMENT_REQUIRED,
+      );
+    }
+
     if (tenant.status === 'SUSPENDED' || tenant.status === 'CANCELLED') {
-      throw new NotFoundException(`Tenant "${slug}" está inativo`);
+      throw new HttpException(
+        { message: 'Esta conta está suspensa. Contacta o suporte ou subscreve um plano.', code: 'ACCOUNT_SUSPENDED' },
+        HttpStatus.PAYMENT_REQUIRED,
+      );
     }
 
     req.tenantId = tenant.id;
