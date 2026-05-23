@@ -101,7 +101,7 @@ export function Sidebar(): React.ReactElement {
   };
 
   return (
-    <aside className="relative flex h-screen w-60 flex-col border-r border-white/[0.06] bg-[#0a0a0f]">
+    <aside className="relative hidden md:flex h-screen w-60 flex-col border-r border-white/[0.06] bg-[#0a0a0f]">
       {/* Logo */}
       <div className="flex h-16 items-center border-b border-white/[0.06] px-5">
         <div className="flex items-center gap-2.5">
