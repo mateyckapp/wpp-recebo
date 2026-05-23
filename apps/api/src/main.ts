@@ -1,3 +1,14 @@
+import * as Sentry from '@sentry/node';
+
+const sentryDsn = process.env['SENTRY_DSN'];
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    environment: process.env['NODE_ENV'] ?? 'development',
+    tracesSampleRate: process.env['NODE_ENV'] === 'production' ? 0.2 : 1.0,
+  });
+}
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -6,6 +17,7 @@ import helmet from 'helmet';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
+import { SentryExceptionFilter } from './common/filters/sentry-exception.filter';
 import type { Request, Response, NextFunction } from 'express';
 
 async function bootstrap(): Promise<void> {
@@ -51,6 +63,8 @@ async function bootstrap(): Promise<void> {
 
   app.use(helmet());
   app.use(cookieParser());
+
+  app.useGlobalFilters(new SentryExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({

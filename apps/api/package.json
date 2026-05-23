@@ -33,6 +33,7 @@
     "@nestjs/throttler": "^6.2.1",
     "@nestjs/websockets": "^10.4.22",
     "@prisma/client": "^5.20.0",
+    "@sentry/node": "^10.53.1",
     "@types/cookie-parser": "^1.4.10",
     "@wpp-recebo/shared": "workspace:*",
     "axios": "^1.7.7",
