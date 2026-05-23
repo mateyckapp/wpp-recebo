@@ -2,6 +2,20 @@ import { create } from 'zustand';
 import { api } from '@/lib/api';
 import type { UserRole } from '@wpp-recebo/shared';
 
+function setSessionCookie(name: string, slug: string): void {
+  if (typeof window === 'undefined') return;
+  const value = encodeURIComponent(JSON.stringify({ name, slug }));
+  const domain = window.location.hostname.includes('localhost') ? 'localhost' : '.wpprecebo.com';
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `wpp_session=${value}; domain=${domain}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax${secure}`;
+}
+
+function clearSessionCookie(): void {
+  if (typeof window === 'undefined') return;
+  const domain = window.location.hostname.includes('localhost') ? 'localhost' : '.wpprecebo.com';
+  document.cookie = `wpp_session=; domain=${domain}; path=/; max-age=0`;
+}
+
 interface AuthUser {
   id: string;
   email: string;
@@ -37,8 +51,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       sessionStorage.setItem('access_token', data.accessToken);
       set({ user: data.user, isAuthenticated: true });
-      // isLoading fica true propositadamente — a página vai redirecionar
-      // e não queremos que o botão fique activo durante a navegação
+      setSessionCookie(data.user.name, data.user.tenantSlug);
       return { tenantSlug: data.user.tenantSlug, accessToken: data.accessToken };
     } catch (err) {
       set({ isLoading: false });
@@ -53,6 +66,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       // ignora
     } finally {
       sessionStorage.removeItem('access_token');
+      clearSessionCookie();
       set({ user: null, isAuthenticated: false });
       // Remove o subdomínio: demo.localhost → localhost | tenant.wpprecebo.pt → wpprecebo.pt
       const parts = window.location.hostname.split('.');
@@ -62,5 +76,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  setUser: (user) => set({ user, isAuthenticated: true }),
+  setUser: (user) => {
+    set({ user, isAuthenticated: true });
+    setSessionCookie(user.name, user.tenantSlug ?? '');
+  },
 }));
