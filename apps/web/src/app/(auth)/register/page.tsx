@@ -48,7 +48,7 @@ export default function RegisterPage(): React.ReactElement {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const parts = window.location.hostname.split('.');
-    if (parts.length > 1) {
+    if (parts.length > 2) {
       const root = parts.slice(1).join('.');
       const port = window.location.port ? `:${window.location.port}` : '';
       window.location.replace(`${window.location.protocol}//${root}${port}/login`);
