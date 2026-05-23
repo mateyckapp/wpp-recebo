@@ -80,7 +80,7 @@ export function LandingNav(): React.ReactElement {
 
         {open && (
           <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50">
-            <div className="w-72 rounded-xl border border-white/[0.1] bg-[#0c0c10]/96 backdrop-blur-xl shadow-2xl shadow-black/60 p-2">
+            <div className="w-72 rounded-xl border border-white/[0.12] bg-[#0d0d12] shadow-2xl shadow-black/80 p-2">
               {PRODUCTS.map((p) => (
                 <Link
                   key={p.key}
