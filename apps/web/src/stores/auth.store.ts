@@ -72,7 +72,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const parts = window.location.hostname.split('.');
       const rootDomain = parts.length > 1 ? parts.slice(1).join('.') : window.location.hostname;
       const port = window.location.port ? `:${window.location.port}` : '';
-      window.location.href = `${window.location.protocol}//${rootDomain}${port}/login`;
+      window.location.href = `${window.location.protocol}//${rootDomain}${port}/`;
     }
   },
 
