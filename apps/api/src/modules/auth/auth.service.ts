@@ -91,7 +91,7 @@ export class AuthService {
     return { id: user.id, email: user.email, name: user.name, role: user.role as UserRole, tenantId: user.tenantId, tenantSlug: tenant.slug, emailVerified: user.emailVerified };
   }
 
-  async verifyEmail(token: string): Promise<void> {
+  async verifyEmail(token: string): Promise<{ tenantSlug: string }> {
     let payload: { sub: string; purpose: string };
     try {
       payload = await this.jwtService.verifyAsync(token, {
@@ -103,7 +103,16 @@ export class AuthService {
     if (payload.purpose !== 'email-verification') {
       throw new UnauthorizedException('Token inválido');
     }
-    await this.prisma.user.update({ where: { id: payload.sub }, data: { emailVerified: true } });
+    const user = await this.prisma.user.update({
+      where: { id: payload.sub },
+      data: { emailVerified: true },
+      select: { tenantId: true },
+    });
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: user.tenantId },
+      select: { slug: true },
+    });
+    return { tenantSlug: tenant?.slug ?? '' };
   }
 
   async resendVerification(userId: string): Promise<void> {

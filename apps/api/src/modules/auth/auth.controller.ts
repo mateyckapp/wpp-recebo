@@ -80,10 +80,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Renovar access token via refresh token (cookie)' })
   async refresh(
     @CurrentUser() user: JwtPayload,
-    @Res({ passthrough: true }) res: Response,
   ): Promise<{ accessToken: string }> {
-    const result = await this.authService.refresh(user);
-    return result;
+    return this.authService.refresh(user);
   }
 
   @Public()
@@ -140,10 +138,10 @@ export class AuthController {
 
   @Public()
   @Get('verify-email')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verificar email com token' })
-  async verifyEmail(@Query('token') token: string): Promise<void> {
-    await this.authService.verifyEmail(token ?? '');
+  async verifyEmail(@Query('token') token: string): Promise<{ tenantSlug: string }> {
+    return this.authService.verifyEmail(token ?? '');
   }
 
   @Post('resend-verification')

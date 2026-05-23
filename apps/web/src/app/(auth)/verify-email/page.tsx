@@ -7,10 +7,20 @@ import { api } from '@/lib/api';
 
 type State = 'loading' | 'success' | 'error';
 
+const APP_DOMAIN = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.com';
+
+function buildDashboardUrl(tenantSlug: string): string {
+  if (typeof window !== 'undefined' && window.location.hostname.includes('localhost')) {
+    return `http://${tenantSlug}.localhost:3000/kanban`;
+  }
+  return `https://${tenantSlug}.${APP_DOMAIN}/kanban`;
+}
+
 function VerifyEmailContent(): React.ReactElement {
   const params = useSearchParams();
   const token = params.get('token') ?? '';
   const [state, setState] = useState<State>('loading');
+  const [dashboardUrl, setDashboardUrl] = useState('/kanban');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -20,8 +30,13 @@ function VerifyEmailContent(): React.ReactElement {
       return;
     }
     api
-      .get(`/auth/verify-email?token=${encodeURIComponent(token)}`)
-      .then(() => setState('success'))
+      .get<{ tenantSlug: string }>(`/auth/verify-email?token=${encodeURIComponent(token)}`)
+      .then(({ data }) => {
+        if (data.tenantSlug) {
+          setDashboardUrl(buildDashboardUrl(data.tenantSlug));
+        }
+        setState('success');
+      })
       .catch((err: unknown) => {
         const axiosErr = err as { response?: { data?: { message?: string } } };
         setErrorMsg(axiosErr?.response?.data?.message ?? 'Link inválido ou expirado.');
@@ -77,12 +92,12 @@ function VerifyEmailContent(): React.ReactElement {
                 <p className="font-semibold text-white">Email verificado!</p>
                 <p className="mt-1 text-sm text-gray-400">A tua conta está agora confirmada.</p>
               </div>
-              <Link
-                href="/kanban"
+              <a
+                href={dashboardUrl}
                 className="inline-block rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition-all shadow-lg shadow-brand-600/25"
               >
                 Ir para o dashboard
-              </Link>
+              </a>
             </div>
           )}
 
@@ -98,10 +113,10 @@ function VerifyEmailContent(): React.ReactElement {
                 <p className="mt-1 text-sm text-gray-400">{errorMsg}</p>
               </div>
               <Link
-                href="/kanban"
+                href="/login"
                 className="inline-block rounded-lg border border-white/10 bg-white/[0.06] px-6 py-2.5 text-sm font-medium text-gray-300 hover:bg-white/[0.09] transition-all"
               >
-                Ir para o dashboard
+                Ir para o login
               </Link>
             </div>
           )}

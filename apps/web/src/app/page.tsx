@@ -1,7 +1,7 @@
 import { FadeIn, FadeInStagger, FadeInItem } from '@/components/landing/animated-section';
+import { LandingNavSession } from '@/components/landing/landing-nav-session';
 
 const REGISTER_URL = '/register';
-const LOGIN_URL = '/login';
 
 const painPoints = [
   {
@@ -280,17 +280,7 @@ export default function LandingPage() {
             <a href="#precos" className="hover:text-white transition-colors">Preços</a>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </nav>
-          <div className="flex items-center gap-3">
-            <a href={LOGIN_URL} className="hidden sm:block text-sm text-gray-400 hover:text-white transition-colors">
-              Entrar
-            </a>
-            <a
-              href={REGISTER_URL}
-              className="text-sm font-semibold px-4 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-500 transition-all shadow-lg shadow-brand-600/25"
-            >
-              Começar grátis
-            </a>
-          </div>
+          <LandingNavSession />
         </div>
       </header>
 
