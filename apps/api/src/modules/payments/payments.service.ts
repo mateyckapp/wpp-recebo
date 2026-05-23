@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
 import Stripe from 'stripe';
@@ -17,15 +17,15 @@ export class PaymentsService {
     this.stripe = new Stripe(this.config.getOrThrow('STRIPE_SECRET_KEY'), {
       apiVersion: '2026-04-22.dahlia',
     });
-    this.appDomain = this.config.get('APP_DOMAIN', 'wpprecebo.pt');
+    this.appDomain = this.config.get('APP_DOMAIN', 'wpprecebo.com');
   }
 
   async create(
     tenantId: string,
     dto: { amount: number; description: string; conversationId?: string; contactId?: string },
   ) {
-    if (dto.amount < 50) throw new BadRequestException('Valor mínimo: €0.50');
-    if (dto.amount > 999_999) throw new BadRequestException('Valor máximo: €9,999.99');
+    if (dto.amount < 50) throw new BadRequestException('Valor mÃ­nimo: â‚¬0.50');
+    if (dto.amount > 999_999) throw new BadRequestException('Valor mÃ¡ximo: â‚¬9,999.99');
 
     const token = randomBytes(16).toString('base64url');
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
@@ -82,7 +82,7 @@ export class PaymentsService {
       include: { tenant: { select: { name: true, logoUrl: true } } },
     });
 
-    if (!payment) throw new NotFoundException('Link de pagamento não encontrado');
+    if (!payment) throw new NotFoundException('Link de pagamento nÃ£o encontrado');
     if (payment.status === 'paid') return { status: 'paid', description: payment.description, amount: payment.amount };
     if (payment.expiresAt && payment.expiresAt < new Date()) {
       return { status: 'expired' };
@@ -112,7 +112,7 @@ export class PaymentsService {
       data: { status: 'paid', paidAt: new Date() },
     });
 
-    this.logger.log(`Pagamento confirmado: ${payment.id} (${payment.amount / 100}€)`);
+    this.logger.log(`Pagamento confirmado: ${payment.id} (${payment.amount / 100}â‚¬)`);
   }
 
   async handlePaymentFailed(paymentIntentId: string) {

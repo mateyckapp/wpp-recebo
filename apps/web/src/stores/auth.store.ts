@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { api } from '@/lib/api';
 import type { UserRole } from '@wpp-recebo/shared';
 
@@ -68,7 +68,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       sessionStorage.removeItem('access_token');
       clearSessionCookie();
       set({ user: null, isAuthenticated: false });
-      // Remove o subdomínio: demo.localhost → localhost | tenant.wpprecebo.pt → wpprecebo.pt
+      // Remove o subdomÃ­nio: demo.localhost â†’ localhost | tenant.wpprecebo.com â†’ wpprecebo.com
       const parts = window.location.hostname.split('.');
       const rootDomain = parts.length > 1 ? parts.slice(1).join('.') : window.location.hostname;
       const port = window.location.port ? `:${window.location.port}` : '';

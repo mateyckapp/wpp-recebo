@@ -1,7 +1,7 @@
-import type { MetadataRoute } from 'next';
+﻿import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const domain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
+  const domain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.com';
   return {
     rules: [
       {

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Post,
   Patch,
@@ -42,7 +42,7 @@ class UpdateProfileDto {
 
 const isDev = process.env['NODE_ENV'] !== 'production';
 // Em dev: domain='localhost' cobre demo.localhost, empresa.localhost, etc.
-// Em prod: APP_COOKIE_DOMAIN='.wpprecebo.pt' cobre todos os subdomínios do tenant
+// Em prod: APP_COOKIE_DOMAIN='.wpprecebo.com' cobre todos os subdomÃ­nios do tenant
 const cookieDomain = isDev ? 'localhost' : (process.env['APP_COOKIE_DOMAIN'] ?? undefined);
 
 const COOKIE_OPTIONS = {
@@ -87,14 +87,14 @@ export class AuthController {
   @Public()
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Terminar sessão' })
+  @ApiOperation({ summary: 'Terminar sessÃ£o' })
   logout(@Res({ passthrough: true }) res: Response): void {
     res.clearCookie('refresh_token', { path: '/' });
   }
 
   @Post('issue-refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Emitir refresh token para sincronização de sessão cross-subdomain' })
+  @ApiOperation({ summary: 'Emitir refresh token para sincronizaÃ§Ã£o de sessÃ£o cross-subdomain' })
   async issueRefresh(@CurrentUser() user: JwtPayload): Promise<{ refreshToken: string }> {
     const refreshToken = await this.authService.issueRefreshToken(user);
     return { refreshToken };
@@ -102,7 +102,7 @@ export class AuthController {
 
   @Public()
   @Get('check-subdomain')
-  @ApiOperation({ summary: 'Verificar disponibilidade de subdomínio' })
+  @ApiOperation({ summary: 'Verificar disponibilidade de subdomÃ­nio' })
   checkSubdomain(@Query('slug') slug: string) {
     return this.authService.checkSubdomain(slug ?? '');
   }
@@ -110,7 +110,7 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registar novo negócio' })
+  @ApiOperation({ summary: 'Registar novo negÃ³cio' })
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -123,7 +123,7 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Solicitar recuperação de password' })
+  @ApiOperation({ summary: 'Solicitar recuperaÃ§Ã£o de password' })
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.authService.forgotPassword(dto.email);
   }
@@ -147,7 +147,7 @@ export class AuthController {
   @Post('resend-verification')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Reenviar email de verificação' })
+  @ApiOperation({ summary: 'Reenviar email de verificaÃ§Ã£o' })
   async resendVerification(@CurrentUser() user: JwtPayload): Promise<void> {
     await this.authService.resendVerification(user.sub);
   }

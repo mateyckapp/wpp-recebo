@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -50,9 +50,9 @@ function UpgradeGate() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
         </svg>
       </div>
-      <h2 className="text-lg font-semibold text-white mb-2">Cobranças via WhatsApp</h2>
+      <h2 className="text-lg font-semibold text-white mb-2">CobranÃ§as via WhatsApp</h2>
       <p className="text-sm text-gray-400 max-w-sm mb-6">
-        Cria links de pagamento e envia diretamente nas conversas. Disponível no plano PRO e superior.
+        Cria links de pagamento e envia diretamente nas conversas. DisponÃ­vel no plano PRO e superior.
       </p>
       <Link href="/invoices" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold transition-colors">
         Ver planos
@@ -93,7 +93,7 @@ export default function PagamentosPage() {
     },
   });
 
-  const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
+  const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.com';
 
   const copyLink = (token: string, id: string) => {
     navigator.clipboard.writeText(`https://${appDomain}/pagar/${token}`);
@@ -109,7 +109,7 @@ export default function PagamentosPage() {
     <div className="flex flex-col gap-6 h-full">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Cobranças</h1>
+          <h1 className="text-xl font-bold text-white">CobranÃ§as</h1>
           <p className="text-sm text-gray-500 mt-0.5">Links de pagamento enviados pelo WhatsApp</p>
         </div>
         <button
@@ -119,7 +119,7 @@ export default function PagamentosPage() {
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Nova cobrança
+          Nova cobranÃ§a
         </button>
       </div>
 
@@ -142,10 +142,10 @@ export default function PagamentosPage() {
       {/* Create form */}
       {showCreate && (
         <div className="rounded-xl border border-brand-500/20 bg-brand-600/5 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Nova cobrança</h3>
+          <h3 className="text-sm font-semibold text-white">Nova cobranÃ§a</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Valor (€)</label>
+              <label className="block text-xs text-gray-400 mb-1.5">Valor (â‚¬)</label>
               <input
                 value={form.amountStr}
                 onChange={(e) => setForm(f => ({ ...f, amountStr: e.target.value }))}
@@ -156,7 +156,7 @@ export default function PagamentosPage() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1.5">Descrição</label>
+              <label className="block text-xs text-gray-400 mb-1.5">DescriÃ§Ã£o</label>
               <input
                 value={form.description}
                 onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
@@ -174,16 +174,16 @@ export default function PagamentosPage() {
               disabled={!form.amountStr || !form.description || createMutation.isPending}
               className="flex-1 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 disabled:opacity-50 text-white text-sm font-semibold transition-colors"
             >
-              {createMutation.isPending ? 'A criar…' : 'Criar e copiar link'}
+              {createMutation.isPending ? 'A criarâ€¦' : 'Criar e copiar link'}
             </button>
           </div>
-          {createMutation.isError && <p className="text-xs text-red-400">Erro ao criar cobrança. Verifica o valor.</p>}
+          {createMutation.isError && <p className="text-xs text-red-400">Erro ao criar cobranÃ§a. Verifica o valor.</p>}
         </div>
       )}
 
       {/* List */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-gray-600">A carregar…</div>
+        <div className="text-center py-12 text-sm text-gray-600">A carregarâ€¦</div>
       ) : payments.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 py-16 text-center">
           <div className="h-12 w-12 rounded-xl border border-white/[0.08] bg-white/[0.02] flex items-center justify-center text-gray-600 mb-4">
@@ -191,8 +191,8 @@ export default function PagamentosPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-gray-300 mb-1">Sem cobranças</p>
-          <p className="text-xs text-gray-600">Cria a tua primeira cobrança e envia o link pelo WhatsApp.</p>
+          <p className="text-sm font-medium text-gray-300 mb-1">Sem cobranÃ§as</p>
+          <p className="text-xs text-gray-600">Cria a tua primeira cobranÃ§a e envia o link pelo WhatsApp.</p>
         </div>
       ) : (
         <div className="rounded-xl border border-white/[0.06] divide-y divide-white/[0.04] overflow-hidden">

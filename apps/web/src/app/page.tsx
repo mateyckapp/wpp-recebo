@@ -1,4 +1,4 @@
-import { FadeIn, FadeInStagger, FadeInItem } from '@/components/landing/animated-section';
+﻿import { FadeIn, FadeInStagger, FadeInItem } from '@/components/landing/animated-section';
 import { LandingNav } from '@/components/landing/landing-nav';
 import { LandingNavSession } from '@/components/landing/landing-nav-session';
 
@@ -6,24 +6,24 @@ const REGISTER_URL = '/register';
 
 const painPoints = [
   {
-    emoji: '😤',
-    title: 'São 22h e tens 14 mensagens por responder',
-    desc: 'Trabalhas o dia todo e ainda tens de gerir o WhatsApp à noite. Os clientes esperam, tu esgotaste.',
+    emoji: 'ðŸ˜¤',
+    title: 'SÃ£o 22h e tens 14 mensagens por responder',
+    desc: 'Trabalhas o dia todo e ainda tens de gerir o WhatsApp Ã  noite. Os clientes esperam, tu esgotaste.',
   },
   {
-    emoji: '📭',
+    emoji: 'ðŸ“­',
     title: 'Perdeste clientes e nem sabes quantos',
-    desc: 'Alguém enviou mensagem, não respondeste a tempo, foi à concorrência. Acontece todos os dias.',
+    desc: 'AlguÃ©m enviou mensagem, nÃ£o respondeste a tempo, foi Ã  concorrÃªncia. Acontece todos os dias.',
   },
   {
-    emoji: '📅',
-    title: 'Marcações por mensagem = agenda em caos',
-    desc: 'Tens de ir ao histórico para confirmar horas, clientes faltam sem avisar e ficas com tempo vazio.',
+    emoji: 'ðŸ“…',
+    title: 'MarcaÃ§Ãµes por mensagem = agenda em caos',
+    desc: 'Tens de ir ao histÃ³rico para confirmar horas, clientes faltam sem avisar e ficas com tempo vazio.',
   },
   {
-    emoji: '😴',
-    title: 'O teu negócio para quando paras tu',
-    desc: 'De férias, doente ou ocupado — sem ti não há resposta. Nenhum negócio consegue crescer assim.',
+    emoji: 'ðŸ˜´',
+    title: 'O teu negÃ³cio para quando paras tu',
+    desc: 'De fÃ©rias, doente ou ocupado â€” sem ti nÃ£o hÃ¡ resposta. Nenhum negÃ³cio consegue crescer assim.',
   },
 ];
 
@@ -36,7 +36,7 @@ const features = [
     ),
     title: 'Caixa de entrada unificada',
     benefit: 'Nunca mais mensagens perdidas',
-    desc: 'Toda a equipa responde num único painel. Atribui conversas, adiciona notas e vê o histórico completo de cada cliente.',
+    desc: 'Toda a equipa responde num Ãºnico painel. Atribui conversas, adiciona notas e vÃª o histÃ³rico completo de cada cliente.',
   },
   {
     icon: (
@@ -46,7 +46,7 @@ const features = [
     ),
     title: 'Agenda online 24/7',
     benefit: 'Clientes marcam sozinhos, sem te ligar',
-    desc: 'Cada cliente tem um link público para marcar. Escolhe o serviço, o profissional e o horário — sem necessitar de ti.',
+    desc: 'Cada cliente tem um link pÃºblico para marcar. Escolhe o serviÃ§o, o profissional e o horÃ¡rio â€” sem necessitar de ti.',
   },
   {
     icon: (
@@ -54,9 +54,9 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
       </svg>
     ),
-    title: 'Lembretes automáticos',
-    benefit: 'Faltas reduzidas em até 70%',
-    desc: 'Confirmação imediata, lembrete 2 dias antes e 1h antes — todos pelo WhatsApp. Os clientes aparecem porque foram avisados.',
+    title: 'Lembretes automÃ¡ticos',
+    benefit: 'Faltas reduzidas em atÃ© 70%',
+    desc: 'ConfirmaÃ§Ã£o imediata, lembrete 2 dias antes e 1h antes â€” todos pelo WhatsApp. Os clientes aparecem porque foram avisados.',
   },
   {
     icon: (
@@ -66,7 +66,7 @@ const features = [
     ),
     title: 'Assistente de IA 24/7',
     benefit: 'Responde fora de horas por ti',
-    desc: 'A IA fala com o teu tom, responde às perguntas mais comuns e agenda — mesmo quando estás a dormir.',
+    desc: 'A IA fala com o teu tom, responde Ã s perguntas mais comuns e agenda â€” mesmo quando estÃ¡s a dormir.',
   },
   {
     icon: (
@@ -76,7 +76,7 @@ const features = [
     ),
     title: 'Kanban de clientes',
     benefit: 'Pipeline de vendas visual',
-    desc: 'Vê cada cliente numa coluna da tua escolha. Do primeiro contacto ao fecho — nada se perde, nada esquece.',
+    desc: 'VÃª cada cliente numa coluna da tua escolha. Do primeiro contacto ao fecho â€” nada se perde, nada esquece.',
   },
   {
     icon: (
@@ -84,26 +84,26 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
       </svg>
     ),
-    title: 'Relatórios e analytics',
-    benefit: 'Decisões com base em dados',
-    desc: 'Tempo de resposta, conversas abertas, mensagens enviadas — tudo medido para saberes o que está a funcionar.',
+    title: 'RelatÃ³rios e analytics',
+    benefit: 'DecisÃµes com base em dados',
+    desc: 'Tempo de resposta, conversas abertas, mensagens enviadas â€” tudo medido para saberes o que estÃ¡ a funcionar.',
   },
 ];
 
 const sectors = [
-  { icon: '✂️', label: 'Cabeleireiros' },
-  { icon: '💆', label: 'Centros de Estética' },
-  { icon: '🦷', label: 'Consultórios' },
-  { icon: '💈', label: 'Barbearias' },
-  { icon: '💪', label: 'Personal Trainers' },
-  { icon: '🏥', label: 'Clínicas' },
-  { icon: '⚖️', label: 'Advogados' },
-  { icon: '📐', label: 'Consultores' },
+  { icon: 'âœ‚ï¸', label: 'Cabeleireiros' },
+  { icon: 'ðŸ’†', label: 'Centros de EstÃ©tica' },
+  { icon: 'ðŸ¦·', label: 'ConsultÃ³rios' },
+  { icon: 'ðŸ’ˆ', label: 'Barbearias' },
+  { icon: 'ðŸ’ª', label: 'Personal Trainers' },
+  { icon: 'ðŸ¥', label: 'ClÃ­nicas' },
+  { icon: 'âš–ï¸', label: 'Advogados' },
+  { icon: 'ðŸ“', label: 'Consultores' },
 ];
 
 const testimonials = [
   {
-    quote: 'Reduzi as faltas em 70% no primeiro mês. Os clientes recebem o lembrete no WhatsApp e aparecem sempre. Já não tenho horas vazias.',
+    quote: 'Reduzi as faltas em 70% no primeiro mÃªs. Os clientes recebem o lembrete no WhatsApp e aparecem sempre. JÃ¡ nÃ£o tenho horas vazias.',
     name: 'Ana Costa',
     role: 'Cabeleireira',
     location: 'Porto',
@@ -111,17 +111,17 @@ const testimonials = [
     initial: 'A',
   },
   {
-    quote: 'Aumentei a faturação em 40% em 3 meses porque deixei de perder contactos no WhatsApp. A IA responde enquanto estou a trabalhar.',
-    name: 'João Pereira',
-    role: 'Centro de Estética',
+    quote: 'Aumentei a faturaÃ§Ã£o em 40% em 3 meses porque deixei de perder contactos no WhatsApp. A IA responde enquanto estou a trabalhar.',
+    name: 'JoÃ£o Pereira',
+    role: 'Centro de EstÃ©tica',
     location: 'Lisboa',
-    highlight: '+40% faturação',
+    highlight: '+40% faturaÃ§Ã£o',
     initial: 'J',
   },
   {
-    quote: 'Os clientes marcam sozinhos pelo link. Já não recebo chamadas às 22h a pedir marcações. Recuperei as minhas noites.',
+    quote: 'Os clientes marcam sozinhos pelo link. JÃ¡ nÃ£o recebo chamadas Ã s 22h a pedir marcaÃ§Ãµes. Recuperei as minhas noites.',
     name: 'Maria Santos',
-    role: 'Consultório de Fisioterapia',
+    role: 'ConsultÃ³rio de Fisioterapia',
     location: 'Braga',
     highlight: 'Recuperou as noites',
     initial: 'M',
@@ -133,16 +133,16 @@ const plans = [
     name: 'Start',
     price: '49',
     originalPrice: '89',
-    desc: 'Para começar com o pé direito',
+    desc: 'Para comeÃ§ar com o pÃ© direito',
     features: [
-      '1 número WhatsApp',
-      'Até 3 utilizadores',
+      '1 nÃºmero WhatsApp',
+      'AtÃ© 3 utilizadores',
       'Caixa de entrada unificada',
       'Kanban de clientes',
-      'Templates de resposta rápida',
+      'Templates de resposta rÃ¡pida',
       'Suporte por email',
     ],
-    cta: 'Começar grátis',
+    cta: 'ComeÃ§ar grÃ¡tis',
     highlighted: false,
     badge: null,
   },
@@ -152,13 +152,13 @@ const plans = [
     originalPrice: '179',
     desc: 'Para equipas que querem crescer',
     features: [
-      '1 número WhatsApp',
+      '1 nÃºmero WhatsApp',
       'Utilizadores ilimitados',
       'Assistente de IA 24/7',
       'Campanhas em massa',
       'Mensagens agendadas',
-      'Relatórios avançados',
-      'Suporte prioritário',
+      'RelatÃ³rios avanÃ§ados',
+      'Suporte prioritÃ¡rio',
     ],
     cta: 'Experimentar Pro',
     highlighted: true,
@@ -168,13 +168,13 @@ const plans = [
     name: 'Enterprise',
     price: '199',
     originalPrice: '349',
-    desc: 'Para grandes operações',
+    desc: 'Para grandes operaÃ§Ãµes',
     features: [
-      'Vários números WhatsApp',
+      'VÃ¡rios nÃºmeros WhatsApp',
       'Utilizadores ilimitados',
       'IA personalizada',
       'API & Webhooks',
-      'Integração à medida',
+      'IntegraÃ§Ã£o Ã  medida',
       'Gestor de conta dedicado',
     ],
     cta: 'Falar connosco',
@@ -185,48 +185,48 @@ const plans = [
 
 const faqs = [
   {
-    q: 'Preciso de sair do meu número de WhatsApp atual?',
-    a: 'Não. Continuas com o mesmo número. Conectamos o teu número de WhatsApp Business à plataforma via API oficial do Meta — sem perder contactos nem histórico.',
+    q: 'Preciso de sair do meu nÃºmero de WhatsApp atual?',
+    a: 'NÃ£o. Continuas com o mesmo nÃºmero. Conectamos o teu nÃºmero de WhatsApp Business Ã  plataforma via API oficial do Meta â€” sem perder contactos nem histÃ³rico.',
   },
   {
     q: 'Quanto tempo demora a configurar?',
-    a: 'A maioria dos clientes fica operacional em menos de 30 minutos. Tens um guia passo a passo e a nossa equipa de suporte disponível para ajudar.',
+    a: 'A maioria dos clientes fica operacional em menos de 30 minutos. Tens um guia passo a passo e a nossa equipa de suporte disponÃ­vel para ajudar.',
   },
   {
-    q: 'Preciso de conhecimentos técnicos?',
-    a: 'Não. Foi desenhado para donos de negócios, não para informáticos. Se sabes usar o WhatsApp, sabes usar o Wpp Recebo.',
+    q: 'Preciso de conhecimentos tÃ©cnicos?',
+    a: 'NÃ£o. Foi desenhado para donos de negÃ³cios, nÃ£o para informÃ¡ticos. Se sabes usar o WhatsApp, sabes usar o Wpp Recebo.',
   },
   {
-    q: 'E se não gostar? Posso cancelar?',
-    a: 'Sim, cancelas quando quiseres, sem penalizações. Tens 14 dias de trial gratuito para experimentar sem comprometeres nada.',
+    q: 'E se nÃ£o gostar? Posso cancelar?',
+    a: 'Sim, cancelas quando quiseres, sem penalizaÃ§Ãµes. Tens 14 dias de trial gratuito para experimentar sem comprometeres nada.',
   },
   {
-    q: 'A IA pode parecer robótica com os meus clientes?',
-    a: 'A IA usa o contexto que tu defines sobre o teu negócio, serviços e tom de voz. Podes deixá-la soar exatamente como tu — natural e humana.',
+    q: 'A IA pode parecer robÃ³tica com os meus clientes?',
+    a: 'A IA usa o contexto que tu defines sobre o teu negÃ³cio, serviÃ§os e tom de voz. Podes deixÃ¡-la soar exatamente como tu â€” natural e humana.',
   },
   {
     q: 'Funciona para mais do que um utilizador / agente?',
-    a: 'Sim. No plano Pro tens utilizadores ilimitados. Podes ter toda a equipa a responder a partir do mesmo número, cada um com o seu acesso.',
+    a: 'Sim. No plano Pro tens utilizadores ilimitados. Podes ter toda a equipa a responder a partir do mesmo nÃºmero, cada um com o seu acesso.',
   },
   {
-    q: 'Os dados dos meus clientes estão seguros?',
-    a: 'Sim. Servidores na Europa, encriptação em trânsito e em repouso, e conformidade com o RGPD. Os dados são teus e só teus.',
+    q: 'Os dados dos meus clientes estÃ£o seguros?',
+    a: 'Sim. Servidores na Europa, encriptaÃ§Ã£o em trÃ¢nsito e em repouso, e conformidade com o RGPD. Os dados sÃ£o teus e sÃ³ teus.',
   },
   {
-    q: 'A agenda online funciona para vários profissionais?',
-    a: 'Sim. Podes criar horários independentes para cada profissional ou sala. Os clientes escolhem com quem querem e a que hora.',
+    q: 'A agenda online funciona para vÃ¡rios profissionais?',
+    a: 'Sim. Podes criar horÃ¡rios independentes para cada profissional ou sala. Os clientes escolhem com quem querem e a que hora.',
   },
 ];
 
 const comparisonRows = [
   { feature: 'Caixa de entrada da equipa', us: true, wa: false, agenda: false },
   { feature: 'Agenda online para clientes', us: true, wa: false, agenda: true },
-  { feature: 'Lembretes automáticos WhatsApp', us: true, wa: false, agenda: '±' },
+  { feature: 'Lembretes automÃ¡ticos WhatsApp', us: true, wa: false, agenda: 'Â±' },
   { feature: 'IA que responde 24/7', us: true, wa: false, agenda: false },
-  { feature: 'Kanban e gestão de clientes', us: true, wa: false, agenda: false },
+  { feature: 'Kanban e gestÃ£o de clientes', us: true, wa: false, agenda: false },
   { feature: 'Campanhas em massa', us: true, wa: false, agenda: false },
-  { feature: 'Multi-agente no mesmo número', us: true, wa: false, agenda: false },
-  { feature: 'Configuração em menos de 30 min', us: true, wa: true, agenda: false },
+  { feature: 'Multi-agente no mesmo nÃºmero', us: true, wa: false, agenda: false },
+  { feature: 'ConfiguraÃ§Ã£o em menos de 30 min', us: true, wa: true, agenda: false },
 ];
 
 function CheckIcon({ value }: { value: boolean | string }) {
@@ -237,8 +237,8 @@ function CheckIcon({ value }: { value: boolean | string }) {
       </svg>
     );
   }
-  if (value === '±') {
-    return <span className="text-amber-400 text-sm font-medium">±</span>;
+  if (value === 'Â±') {
+    return <span className="text-amber-400 text-sm font-medium">Â±</span>;
   }
   return (
     <svg className="h-5 w-5 text-gray-700 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -264,7 +264,7 @@ export default function LandingPage() {
         }}
       />
 
-      {/* ── NAVBAR ──────────────────────────────────────────────── */}
+      {/* â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#060609]/85 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -280,14 +280,14 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── HERO ────────────────────────────────────────────────── */}
+      {/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative max-w-6xl mx-auto px-6 pt-24 pb-28 text-center">
         <FadeIn delay={0.05}>
           <div className="inline-flex items-center gap-2 border border-brand-500/25 bg-brand-600/10 text-brand-400 text-xs font-semibold px-4 py-2 rounded-full mb-8">
             <svg className="h-3.5 w-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            Mais de 200 negócios portugueses já usam
+            Mais de 200 negÃ³cios portugueses jÃ¡ usam
           </div>
         </FadeIn>
 
@@ -303,8 +303,8 @@ export default function LandingPage() {
 
         <FadeIn delay={0.25}>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            O Wpp Recebo junta a caixa de entrada da tua equipa, a agenda online e a IA numa só plataforma —
-            para que o teu negócio funcione mesmo quando não estás disponível.
+            O Wpp Recebo junta a caixa de entrada da tua equipa, a agenda online e a IA numa sÃ³ plataforma â€”
+            para que o teu negÃ³cio funcione mesmo quando nÃ£o estÃ¡s disponÃ­vel.
           </p>
         </FadeIn>
 
@@ -314,7 +314,7 @@ export default function LandingPage() {
               href={REGISTER_URL}
               className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-brand-600 text-white font-semibold text-sm hover:bg-brand-500 transition-all shadow-2xl shadow-brand-600/35 hover:shadow-brand-500/45 hover:-translate-y-0.5"
             >
-              Experimentar 14 dias grátis
+              Experimentar 14 dias grÃ¡tis
               <svg className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
@@ -330,7 +330,7 @@ export default function LandingPage() {
             </a>
           </div>
           <p className="text-xs text-gray-600">
-            Sem cartão de crédito&nbsp;·&nbsp;Cancela quando quiseres&nbsp;·&nbsp;Configura em 5 minutos
+            Sem cartÃ£o de crÃ©dito&nbsp;Â·&nbsp;Cancela quando quiseres&nbsp;Â·&nbsp;Configura em 5 minutos
           </p>
         </FadeIn>
 
@@ -349,16 +349,16 @@ export default function LandingPage() {
         </FadeIn>
       </section>
 
-      {/* ── PAIN SECTION ────────────────────────────────────────── */}
+      {/* â”€â”€ PAIN SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="border-t border-white/[0.06] py-28">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-14">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Reconheces esta situação?</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Reconheces esta situaÃ§Ã£o?</p>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              O problema não és tu.<br />É a falta da ferramenta certa.
+              O problema nÃ£o Ã©s tu.<br />Ã‰ a falta da ferramenta certa.
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Todos os dias, milhares de negócios perdem clientes por causa de mensagens sem resposta, faltas e desorganização.
+              Todos os dias, milhares de negÃ³cios perdem clientes por causa de mensagens sem resposta, faltas e desorganizaÃ§Ã£o.
             </p>
           </FadeIn>
 
@@ -380,26 +380,26 @@ export default function LandingPage() {
             <div className="relative text-center bg-gradient-to-r from-brand-600/10 via-brand-600/5 to-transparent border border-brand-500/20 rounded-2xl px-8 py-10">
               <p className="text-2xl md:text-3xl font-bold text-white leading-snug">
                 "Cada mensagem sem resposta<br />
-                <span className="text-brand-400">é um cliente que foi embora."</span>
+                <span className="text-brand-400">Ã© um cliente que foi embora."</span>
               </p>
-              <p className="text-sm text-gray-500 mt-4">E o pior? A maioria nunca diz nada — simplesmente não volta.</p>
+              <p className="text-sm text-gray-500 mt-4">E o pior? A maioria nunca diz nada â€” simplesmente nÃ£o volta.</p>
             </div>
           </FadeIn>
         </div>
       </section>
 
-      {/* ── FEATURES ────────────────────────────────────────────── */}
+      {/* â”€â”€ FEATURES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="funcionalidades" className="py-28 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <div className="inline-flex items-center gap-2 border border-white/10 text-gray-500 text-xs font-medium px-3 py-1.5 rounded-full mb-5">
-              A solução
+              A soluÃ§Ã£o
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              Tudo o que precisas. Numa só plataforma.
+              Tudo o que precisas. Numa sÃ³ plataforma.
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto">
-              Desenvolvido especificamente para negócios portugueses que usam WhatsApp como canal principal.
+              Desenvolvido especificamente para negÃ³cios portugueses que usam WhatsApp como canal principal.
             </p>
           </FadeIn>
 
@@ -424,20 +424,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── AGENDA HIGHLIGHT ────────────────────────────────────── */}
+      {/* â”€â”€ AGENDA HIGHLIGHT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="agenda" className="py-28 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <div className="inline-flex items-center gap-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-4 py-2 rounded-full mb-5">
-              Novo · Agenda Online Integrada
+              Novo Â· Agenda Online Integrada
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
               Os teus clientes marcam sozinhos.<br />
-              <span className="text-emerald-400">Tu só apareces à hora certa.</span>
+              <span className="text-emerald-400">Tu sÃ³ apareces Ã  hora certa.</span>
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-              Chega de mensagens às 22h a pedir marcações. Com a agenda online, cada cliente escolhe o serviço,
-              o profissional e o horário — 24h por dia, sem ti.
+              Chega de mensagens Ã s 22h a pedir marcaÃ§Ãµes. Com a agenda online, cada cliente escolhe o serviÃ§o,
+              o profissional e o horÃ¡rio â€” 24h por dia, sem ti.
             </p>
           </FadeIn>
 
@@ -447,24 +447,24 @@ export default function LandingPage() {
               <div className="space-y-5">
                 {[
                   {
-                    icon: '🔗',
-                    title: 'Link público da tua agenda',
+                    icon: 'ðŸ”—',
+                    title: 'Link pÃºblico da tua agenda',
                     desc: 'Partilhas o teu link no WhatsApp, Instagram ou onde quiseres. O cliente clica e marca.',
                   },
                   {
-                    icon: '📲',
-                    title: 'Lembretes automáticos no WhatsApp',
-                    desc: 'Confirmação imediata + lembrete 2 dias antes + lembrete 1h antes. As faltas desaparecem.',
+                    icon: 'ðŸ“²',
+                    title: 'Lembretes automÃ¡ticos no WhatsApp',
+                    desc: 'ConfirmaÃ§Ã£o imediata + lembrete 2 dias antes + lembrete 1h antes. As faltas desaparecem.',
                   },
                   {
-                    icon: '📅',
+                    icon: 'ðŸ“…',
                     title: 'Agenda por profissional ou sala',
-                    desc: 'Vários profissionais, horários independentes. Os clientes escolhem com quem querem.',
+                    desc: 'VÃ¡rios profissionais, horÃ¡rios independentes. Os clientes escolhem com quem querem.',
                   },
                   {
-                    icon: '🤖',
+                    icon: 'ðŸ¤–',
                     title: 'IA que agenda durante a conversa',
-                    desc: 'O cliente pergunta no WhatsApp "tenho horário para amanhã?" — a IA responde e marca ali mesmo.',
+                    desc: 'O cliente pergunta no WhatsApp "tenho horÃ¡rio para amanhÃ£?" â€” a IA responde e marca ali mesmo.',
                   },
                 ].map((b) => (
                   <div key={b.title} className="flex gap-4 items-start">
@@ -487,12 +487,12 @@ export default function LandingPage() {
                     { from: 'cliente', text: 'Bom dia! Queria marcar uma consulta de fisioterapia para esta semana.' },
                     {
                       from: 'ia',
-                      text: 'Olá! Temos disponibilidade esta semana:\n\n📅 Terça — 10h00, 14h00, 16h30\n📅 Quarta — 9h00, 11h00, 15h00\n📅 Quinta — 10h00, 17h00\n\nQual prefere?',
+                      text: 'OlÃ¡! Temos disponibilidade esta semana:\n\nðŸ“… TerÃ§a â€” 10h00, 14h00, 16h30\nðŸ“… Quarta â€” 9h00, 11h00, 15h00\nðŸ“… Quinta â€” 10h00, 17h00\n\nQual prefere?',
                     },
-                    { from: 'cliente', text: 'Terça às 14h, por favor!' },
+                    { from: 'cliente', text: 'TerÃ§a Ã s 14h, por favor!' },
                     {
                       from: 'ia',
-                      text: '✅ Marcado! Consulta de fisioterapia na terça-feira às 14h00 com Dra. Ana Silva.\n\nVais receber um lembrete 2 dias antes e 1h antes. Até lá! 😊',
+                      text: 'âœ… Marcado! Consulta de fisioterapia na terÃ§a-feira Ã s 14h00 com Dra. Ana Silva.\n\nVais receber um lembrete 2 dias antes e 1h antes. AtÃ© lÃ¡! ðŸ˜Š',
                     },
                   ].map((msg, i) => (
                     <div key={i} className={`flex ${msg.from === 'cliente' ? 'justify-start' : 'justify-end'}`}>
@@ -504,7 +504,7 @@ export default function LandingPage() {
                         }`}
                       >
                         {msg.from === 'ia' && (
-                          <span className="text-emerald-400 text-[10px] font-bold block mb-1 uppercase tracking-wider">IA · Wpp Recebo</span>
+                          <span className="text-emerald-400 text-[10px] font-bold block mb-1 uppercase tracking-wider">IA Â· Wpp Recebo</span>
                         )}
                         {msg.text}
                       </div>
@@ -513,7 +513,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <p className="text-xs text-gray-500">Disponível 24h por dia, 7 dias por semana</p>
+                  <p className="text-xs text-gray-500">DisponÃ­vel 24h por dia, 7 dias por semana</p>
                 </div>
               </div>
             </FadeIn>
@@ -526,25 +526,25 @@ export default function LandingPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     <span className="text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full">Agenda Pro</span>
-                    <span className="text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full">🎉 Oferta de lançamento</span>
+                    <span className="text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full">ðŸŽ‰ Oferta de lanÃ§amento</span>
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-1">Pro + Agenda Online Completa</h3>
-                  <p className="text-gray-400 text-sm max-w-sm">WhatsApp, agenda, lembretes automáticos e IA — tudo incluído.</p>
+                  <p className="text-gray-400 text-sm max-w-sm">WhatsApp, agenda, lembretes automÃ¡ticos e IA â€” tudo incluÃ­do.</p>
                 </div>
                 <div className="flex-shrink-0 text-center md:text-right">
                   <div className="flex items-baseline gap-2 md:justify-end">
-                    <span className="text-5xl font-bold text-white tabular-nums">129€</span>
-                    <span className="text-gray-500 text-sm">/mês</span>
-                    <span className="text-gray-600 line-through text-xl">229€</span>
+                    <span className="text-5xl font-bold text-white tabular-nums">129â‚¬</span>
+                    <span className="text-gray-500 text-sm">/mÃªs</span>
+                    <span className="text-gray-600 line-through text-xl">229â‚¬</span>
                   </div>
-                  <p className="text-xs text-amber-400/80 mt-1 mb-4">Preço normal após lançamento</p>
+                  <p className="text-xs text-amber-400/80 mt-1 mb-4">PreÃ§o normal apÃ³s lanÃ§amento</p>
                   <a
                     href={REGISTER_URL}
                     className="inline-block px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20 hover:-translate-y-0.5"
                   >
-                    Experimentar grátis — 14 dias
+                    Experimentar grÃ¡tis â€” 14 dias
                   </a>
-                  <p className="text-xs text-gray-600 mt-2">Sem cartão. Cancela quando quiseres.</p>
+                  <p className="text-xs text-gray-600 mt-2">Sem cartÃ£o. Cancela quando quiseres.</p>
                 </div>
               </div>
             </div>
@@ -552,15 +552,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── STATS ───────────────────────────────────────────────── */}
+      {/* â”€â”€ STATS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="border-y border-white/[0.06] bg-white/[0.015]">
         <div className="max-w-6xl mx-auto px-6 py-14">
           <FadeInStagger className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { value: '200+', label: 'negócios ativos', sub: 'em Portugal' },
+              { value: '200+', label: 'negÃ³cios ativos', sub: 'em Portugal' },
               { value: '70%', label: 'menos faltas', sub: 'com lembretes WhatsApp' },
-              { value: '3×', label: 'mais rápido', sub: 'a responder a clientes' },
-              { value: '24/7', label: 'disponível', sub: 'com IA integrada' },
+              { value: '3Ã—', label: 'mais rÃ¡pido', sub: 'a responder a clientes' },
+              { value: '24/7', label: 'disponÃ­vel', sub: 'com IA integrada' },
             ].map((s) => (
               <FadeInItem key={s.label}>
                 <div className="text-4xl font-bold text-white mb-1 tabular-nums">{s.value}</div>
@@ -572,14 +572,14 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ── COMPARISON TABLE ─────────────────────────────────────── */}
+      {/* â”€â”€ COMPARISON TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-28 border-t border-white/[0.06]">
         <div className="max-w-4xl mx-auto px-6">
           <FadeIn className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              Porque é diferente do resto
+              Porque Ã© diferente do resto
             </h2>
-            <p className="text-gray-400">Uma comparação honesta</p>
+            <p className="text-gray-400">Uma comparaÃ§Ã£o honesta</p>
           </FadeIn>
 
           <FadeIn>
@@ -621,12 +621,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ────────────────────────────────────────── */}
+      {/* â”€â”€ TESTIMONIALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-28 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              Negócios que já transformaram o seu WhatsApp
+              NegÃ³cios que jÃ¡ transformaram o seu WhatsApp
             </h2>
             <p className="text-gray-400">Resultados reais, de clientes reais, em Portugal</p>
           </FadeIn>
@@ -652,7 +652,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-200">{t.name}</p>
-                      <p className="text-xs text-gray-500">{t.role} · {t.location}</p>
+                      <p className="text-xs text-gray-500">{t.role} Â· {t.location}</p>
                     </div>
                   </div>
                 </div>
@@ -662,22 +662,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING ─────────────────────────────────────────────── */}
+      {/* â”€â”€ PRICING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="precos" className="py-28 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-6">
           <FadeIn className="text-center mb-4">
             <div className="inline-flex items-center gap-2 border border-white/10 text-gray-500 text-xs font-medium px-3 py-1.5 rounded-full mb-5">
-              Preços
+              PreÃ§os
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
               Menos do que perdes por dia<br />em clientes sem resposta
             </h2>
-            <p className="text-gray-400">14 dias grátis · Sem cartão · Cancela quando quiseres</p>
+            <p className="text-gray-400">14 dias grÃ¡tis Â· Sem cartÃ£o Â· Cancela quando quiseres</p>
           </FadeIn>
 
           <FadeIn className="flex justify-center mb-10">
             <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-semibold px-4 py-2 rounded-full">
-              🎉 Preços de lançamento — válidos enquanto houver vagas
+              ðŸŽ‰ PreÃ§os de lanÃ§amento â€” vÃ¡lidos enquanto houver vagas
             </div>
           </FadeIn>
 
@@ -698,16 +698,16 @@ export default function LandingPage() {
                       </span>
                     )}
                     <span className="text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/25 px-3 py-1 rounded-full">
-                      🎉 Oferta
+                      ðŸŽ‰ Oferta
                     </span>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-1">{p.name}</h3>
                   <p className="text-sm text-gray-400 mb-5">{p.desc}</p>
                   <div className="mb-6">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-white tabular-nums">{p.price}€</span>
-                      <span className="text-gray-500 text-sm">/mês</span>
-                      <span className="text-gray-600 line-through text-lg tabular-nums">{p.originalPrice}€</span>
+                      <span className="text-4xl font-bold text-white tabular-nums">{p.price}â‚¬</span>
+                      <span className="text-gray-500 text-sm">/mÃªs</span>
+                      <span className="text-gray-600 line-through text-lg tabular-nums">{p.originalPrice}â‚¬</span>
                     </div>
                   </div>
                   <ul className="space-y-3 flex-1 mb-8">
@@ -743,22 +743,22 @@ export default function LandingPage() {
                   <span className="text-xs font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/25 px-3 py-1 rounded-full">Agenda Pro</span>
                   <span className="text-xs text-gray-500">Plano Pro + Agenda integrada</span>
                 </div>
-                <h4 className="font-bold text-white text-lg mb-1">Para negócios com marcações</h4>
-                <p className="text-sm text-gray-400">Clínicas, salões, consultórios, barbearias — a solução completa com agenda, lembretes e IA.</p>
+                <h4 className="font-bold text-white text-lg mb-1">Para negÃ³cios com marcaÃ§Ãµes</h4>
+                <p className="text-sm text-gray-400">ClÃ­nicas, salÃµes, consultÃ³rios, barbearias â€” a soluÃ§Ã£o completa com agenda, lembretes e IA.</p>
               </div>
               <div className="flex-shrink-0 flex items-center gap-6">
                 <div>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-bold text-white">129€</span>
-                    <span className="text-gray-500 text-sm">/mês</span>
-                    <span className="text-gray-600 line-through">229€</span>
+                    <span className="text-3xl font-bold text-white">129â‚¬</span>
+                    <span className="text-gray-500 text-sm">/mÃªs</span>
+                    <span className="text-gray-600 line-through">229â‚¬</span>
                   </div>
                 </div>
                 <a
                   href={REGISTER_URL}
                   className="flex-shrink-0 px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-500 transition-all whitespace-nowrap"
                 >
-                  Experimentar grátis
+                  Experimentar grÃ¡tis
                 </a>
               </div>
             </div>
@@ -766,12 +766,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FAQ ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section id="faq" className="py-28 border-t border-white/[0.06]">
         <div className="max-w-3xl mx-auto px-6">
           <FadeIn className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">Perguntas frequentes</h2>
-            <p className="text-gray-400">Tudo o que precisas de saber antes de começar</p>
+            <p className="text-gray-400">Tudo o que precisas de saber antes de comeÃ§ar</p>
           </FadeIn>
 
           <FadeInStagger className="space-y-3">
@@ -800,7 +800,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ───────────────────────────────────────────── */}
+      {/* â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="py-28 border-t border-white/[0.06]">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <FadeIn>
@@ -810,23 +810,23 @@ export default function LandingPage() {
               </div>
 
               <div className="inline-flex items-center gap-2 border border-amber-500/25 bg-amber-500/10 text-amber-400 text-xs font-semibold px-4 py-2 rounded-full mb-8">
-                ⚡ O teu concorrente já está a responder mais rápido que tu
+                âš¡ O teu concorrente jÃ¡ estÃ¡ a responder mais rÃ¡pido que tu
               </div>
 
               <h2 className="text-3xl md:text-5xl font-bold text-white mb-5 tracking-tight leading-tight">
                 Cada dia que passa<br />
-                <span className="text-brand-400">é um cliente que pode ir embora.</span>
+                <span className="text-brand-400">Ã© um cliente que pode ir embora.</span>
               </h2>
               <p className="text-gray-400 mb-10 text-lg leading-relaxed">
-                Junta-te a mais de 200 negócios portugueses que já pararam de perder clientes por falta de resposta.
-                O trial é gratuito, sem cartão, sem compromisso.
+                Junta-te a mais de 200 negÃ³cios portugueses que jÃ¡ pararam de perder clientes por falta de resposta.
+                O trial Ã© gratuito, sem cartÃ£o, sem compromisso.
               </p>
 
               <a
                 href={REGISTER_URL}
                 className="group inline-flex items-center gap-2.5 px-10 py-5 rounded-xl bg-brand-600 text-white font-bold text-base hover:bg-brand-500 transition-all shadow-2xl shadow-brand-600/35 hover:shadow-brand-500/45 hover:-translate-y-0.5"
               >
-                Começar o meu trial gratuito agora
+                ComeÃ§ar o meu trial gratuito agora
                 <svg className="h-5 w-5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
@@ -837,13 +837,13 @@ export default function LandingPage() {
                   <svg className="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  14 dias grátis
+                  14 dias grÃ¡tis
                 </span>
                 <span className="flex items-center gap-1.5">
                   <svg className="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  Sem cartão de crédito
+                  Sem cartÃ£o de crÃ©dito
                 </span>
                 <span className="flex items-center gap-1.5">
                   <svg className="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -857,7 +857,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ──────────────────────────────────────────────── */}
+      {/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer className="border-t border-white/[0.06] py-10">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
@@ -872,19 +872,19 @@ export default function LandingPage() {
             <nav className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
               <a href="#funcionalidades" className="hover:text-gray-300 transition-colors">Funcionalidades</a>
               <a href="#agenda" className="hover:text-gray-300 transition-colors">Agenda</a>
-              <a href="#precos" className="hover:text-gray-300 transition-colors">Preços</a>
+              <a href="#precos" className="hover:text-gray-300 transition-colors">PreÃ§os</a>
               <a href="#faq" className="hover:text-gray-300 transition-colors">FAQ</a>
             </nav>
             <div className="flex gap-5 text-sm text-gray-500">
               <a href="/privacy" className="hover:text-gray-300 transition-colors">Privacidade</a>
               <a href="/terms" className="hover:text-gray-300 transition-colors">Termos</a>
               <a href="/cookies" className="hover:text-gray-300 transition-colors">Cookies</a>
-              <a href="mailto:suporte@wpprecebo.pt" className="hover:text-gray-300 transition-colors">Suporte</a>
+              <a href="mailto:suporte@wpprecebo.com" className="hover:text-gray-300 transition-colors">Suporte</a>
             </div>
           </div>
           <div className="border-t border-white/[0.05] pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-gray-600">© 2026 Wpp Recebo. Todos os direitos reservados. Feito em Portugal 🇵🇹</p>
-            <p className="text-xs text-gray-600">Conforme com o RGPD · Dados protegidos · Servidores na Europa</p>
+            <p className="text-xs text-gray-600">Â© 2026 Wpp Recebo. Todos os direitos reservados. Feito em Portugal ðŸ‡µðŸ‡¹</p>
+            <p className="text-xs text-gray-600">Conforme com o RGPD Â· Dados protegidos Â· Servidores na Europa</p>
           </div>
         </div>
       </footer>

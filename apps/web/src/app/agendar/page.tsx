@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+﻿import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { BookingFlow } from './booking-flow';
 
@@ -10,7 +10,7 @@ function extractSlug(host: string): string | null {
     if (parts.length >= 2 && parts[0] && !RESERVED.has(parts[0])) return parts[0];
     return null;
   }
-  const domain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
+  const domain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.com';
   if (!host.endsWith('.' + domain)) return null;
   const sub = host.slice(0, -(domain.length + 1));
   return sub && !RESERVED.has(sub) ? sub : null;

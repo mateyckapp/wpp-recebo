@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
+﻿import { Injectable, NestMiddleware, NotFoundException, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
 import { tenantStorage } from '../context/tenant.context';
@@ -21,7 +21,7 @@ export class TenantMiddleware implements NestMiddleware {
     const slug = this.extractSlug(host);
 
     if (!slug) {
-      // Rotas sem subdomínio de tenant (ex: api.wpprecebo.pt) passam sem contexto
+      // Rotas sem subdomÃ­nio de tenant (ex: api.wpprecebo.com) passam sem contexto
       next();
       return;
     }
@@ -32,19 +32,19 @@ export class TenantMiddleware implements NestMiddleware {
     });
 
     if (!tenant) {
-      throw new NotFoundException(`Tenant "${slug}" não encontrado`);
+      throw new NotFoundException(`Tenant "${slug}" nÃ£o encontrado`);
     }
 
     if (tenant.status === 'TRIAL' && tenant.trialEndsAt && tenant.trialEndsAt < new Date()) {
       throw new HttpException(
-        { message: 'O teu período de trial terminou. Subscreve um plano para continuar.', code: 'TRIAL_EXPIRED' },
+        { message: 'O teu perÃ­odo de trial terminou. Subscreve um plano para continuar.', code: 'TRIAL_EXPIRED' },
         HttpStatus.PAYMENT_REQUIRED,
       );
     }
 
     if (tenant.status === 'SUSPENDED' || tenant.status === 'CANCELLED') {
       throw new HttpException(
-        { message: 'Esta conta está suspensa. Contacta o suporte ou subscreve um plano.', code: 'ACCOUNT_SUSPENDED' },
+        { message: 'Esta conta estÃ¡ suspensa. Contacta o suporte ou subscreve um plano.', code: 'ACCOUNT_SUSPENDED' },
         HttpStatus.PAYMENT_REQUIRED,
       );
     }
@@ -52,14 +52,14 @@ export class TenantMiddleware implements NestMiddleware {
     req.tenantId = tenant.id;
     req.tenantSlug = tenant.slug;
 
-    // Propaga o tenantId por toda a cadeia assíncrona desta request
+    // Propaga o tenantId por toda a cadeia assÃ­ncrona desta request
     tenantStorage.run({ tenantId: tenant.id, tenantSlug: tenant.slug }, () => {
       next();
     });
   }
 
   extractSlug(host: string): string | null {
-    const appDomain = process.env['APP_DOMAIN'] ?? 'wpprecebo.pt';
+    const appDomain = process.env['APP_DOMAIN'] ?? 'wpprecebo.com';
 
     // Suporte a localhost em dev: demo.localhost
     if (host.includes('localhost')) {
@@ -70,7 +70,7 @@ export class TenantMiddleware implements NestMiddleware {
       return null;
     }
 
-    // Produção: {slug}.wpprecebo.pt (requer ponto antes do domínio)
+    // ProduÃ§Ã£o: {slug}.wpprecebo.com (requer ponto antes do domÃ­nio)
     if (!host.endsWith('.' + appDomain)) return null;
 
     const subdomain = host.slice(0, host.length - appDomain.length - 1);

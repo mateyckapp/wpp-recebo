@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,14 +12,14 @@ import type { UserRole } from '@wpp-recebo/shared';
 
 const schema = z.object({
   name: z.string().min(2, 'Nome demasiado curto'),
-  email: z.string().email('Email inválido'),
-  password: z.string().min(8, 'Mínimo 8 caracteres'),
+  email: z.string().email('Email invÃ¡lido'),
+  password: z.string().min(8, 'MÃ­nimo 8 caracteres'),
   companyName: z.string().min(2, 'Nome demasiado curto'),
   slug: z
     .string()
-    .min(2, 'Mínimo 2 caracteres')
-    .max(50, 'Máximo 50 caracteres')
-    .regex(/^[a-z0-9-]+$/, 'Só letras minúsculas, números e hífens'),
+    .min(2, 'MÃ­nimo 2 caracteres')
+    .max(50, 'MÃ¡ximo 50 caracteres')
+    .regex(/^[a-z0-9-]+$/, 'SÃ³ letras minÃºsculas, nÃºmeros e hÃ­fens'),
 });
 
 type RegisterForm = z.infer<typeof schema>;
@@ -44,7 +44,7 @@ export default function RegisterPage(): React.ReactElement {
   const { setUser } = useAuthStore();
   const [subdomainState, setSubdomainState] = useState<SubdomainState>({ status: 'idle' });
 
-  // Bloqueia acesso ao registo em subdomínios — só existe no domínio raiz
+  // Bloqueia acesso ao registo em subdomÃ­nios â€” sÃ³ existe no domÃ­nio raiz
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const parts = window.location.hostname.split('.');
@@ -110,7 +110,7 @@ export default function RegisterPage(): React.ReactElement {
 
   const onSubmit = async (data: RegisterForm): Promise<void> => {
     if (subdomainState.status === 'taken') {
-      setError('slug', { message: 'Subdomínio já em uso' });
+      setError('slug', { message: 'SubdomÃ­nio jÃ¡ em uso' });
       return;
     }
     setIsSubmitting(true);
@@ -123,7 +123,7 @@ export default function RegisterPage(): React.ReactElement {
       sessionStorage.setItem('access_token', res.accessToken);
       setUser(res.user);
 
-      // Derive o domínio raiz a partir do URL actual — não depende de env vars baked no build
+      // Derive o domÃ­nio raiz a partir do URL actual â€” nÃ£o depende de env vars baked no build
       const { protocol, hostname, port } = window.location;
       const portSuffix = port ? `:${port}` : '';
       const base = `${protocol}//${data.slug}.${hostname}${portSuffix}`;
@@ -131,10 +131,10 @@ export default function RegisterPage(): React.ReactElement {
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } }; message?: string };
       const msg = axiosErr?.response?.data?.message ?? axiosErr?.message ?? 'Erro ao criar conta';
-      if (msg.includes('Subdomínio')) {
+      if (msg.includes('SubdomÃ­nio')) {
         setError('slug', { message: msg });
       } else if (msg.includes('Email')) {
-        setError('email', { message: 'Este email já está registado' });
+        setError('email', { message: 'Este email jÃ¡ estÃ¡ registado' });
       } else {
         setError('root', { message: msg });
       }
@@ -166,8 +166,8 @@ export default function RegisterPage(): React.ReactElement {
               <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.07L2 22l5.09-1.35A9.93 9.93 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Criar conta grátis</h1>
-          <p className="mt-1 text-sm text-gray-400">14 dias grátis, sem cartão de crédito</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Criar conta grÃ¡tis</h1>
+          <p className="mt-1 text-sm text-gray-400">14 dias grÃ¡tis, sem cartÃ£o de crÃ©dito</p>
         </div>
 
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-8 backdrop-blur-sm">
@@ -204,7 +204,7 @@ export default function RegisterPage(): React.ReactElement {
               <input
                 type="password"
                 autoComplete="new-password"
-                placeholder="Mínimo 8 caracteres"
+                placeholder="MÃ­nimo 8 caracteres"
                 className="w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none transition focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/20"
                 {...register('password')}
               />
@@ -213,7 +213,7 @@ export default function RegisterPage(): React.ReactElement {
 
             {/* Company name */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-300">Nome do negócio</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">Nome do negÃ³cio</label>
               <input
                 type="text"
                 placeholder="Empresa Lda"
@@ -225,7 +225,7 @@ export default function RegisterPage(): React.ReactElement {
 
             {/* Subdomain */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-300">Subdomínio</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-300">SubdomÃ­nio</label>
               <div className="flex items-stretch rounded-lg border border-white/10 bg-white/[0.06] overflow-hidden transition focus-within:border-brand-500/60 focus-within:ring-2 focus-within:ring-brand-500/20">
                 <input
                   type="text"
@@ -233,7 +233,7 @@ export default function RegisterPage(): React.ReactElement {
                   className="flex-1 bg-transparent px-3 py-2.5 text-sm text-white placeholder-gray-500 outline-none"
                   {...register('slug')}
                 />
-                <span className="flex items-center pr-3 text-xs text-gray-500 select-none">.wpprecebo.pt</span>
+                <span className="flex items-center pr-3 text-xs text-gray-500 select-none">.wpprecebo.com</span>
               </div>
 
               {/* Validation feedback */}
@@ -249,7 +249,7 @@ export default function RegisterPage(): React.ReactElement {
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    Subdomínio disponível
+                    SubdomÃ­nio disponÃ­vel
                   </p>
                 )}
                 {!errors.slug && subdomainState.status === 'taken' && (
@@ -258,7 +258,7 @@ export default function RegisterPage(): React.ReactElement {
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                      Subdomínio já em uso. Sugestões:
+                      SubdomÃ­nio jÃ¡ em uso. SugestÃµes:
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {subdomainState.suggestions.map((s) => (
@@ -293,9 +293,9 @@ export default function RegisterPage(): React.ReactElement {
           </form>
 
           <p className="mt-6 text-center text-xs text-gray-500">
-            Já tens conta?{' '}
+            JÃ¡ tens conta?{' '}
             <Link href="/login" className="text-brand-400 hover:text-brand-300 transition-colors font-medium">
-              Iniciar sessão
+              Iniciar sessÃ£o
             </Link>
           </p>
         </div>

@@ -1,6 +1,6 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 
-export const metadata = { title: 'Política de Cookies — Wpp Recebo' };
+export const metadata = { title: 'PolÃ­tica de Cookies â€” Wpp Recebo' };
 
 export default function CookiesPage() {
   return (
@@ -15,28 +15,28 @@ export default function CookiesPage() {
             </div>
             <span className="font-semibold text-sm">Wpp Recebo</span>
           </Link>
-          <span className="text-xs text-gray-500">Última atualização: 23 de maio de 2026</span>
+          <span className="text-xs text-gray-500">Ãšltima atualizaÃ§Ã£o: 23 de maio de 2026</span>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2">Política de Cookies</h1>
+        <h1 className="text-3xl font-bold mb-2">PolÃ­tica de Cookies</h1>
         <p className="text-gray-400 mb-10">
-          Esta Política explica o que são cookies, como os utilizamos e quais são as tuas opções.
-          É aplicável ao website <strong>wpprecebo.pt</strong> e à plataforma em subdomínios
-          (ex.: <code className="text-brand-400">nome.wpprecebo.pt</code>).
+          Esta PolÃ­tica explica o que sÃ£o cookies, como os utilizamos e quais sÃ£o as tuas opÃ§Ãµes.
+          Ã‰ aplicÃ¡vel ao website <strong>wpprecebo.com</strong> e Ã  plataforma em subdomÃ­nios
+          (ex.: <code className="text-brand-400">nome.wpprecebo.com</code>).
         </p>
 
-        <Section title="1. O que são Cookies?">
+        <Section title="1. O que sÃ£o Cookies?">
           <p>
-            Cookies são pequenos ficheiros de texto que os websites guardam no teu dispositivo quando os visitas.
-            São amplamente utilizados para fazer os websites funcionar, melhorar a experiência de utilização
-            e fornecer informações ao proprietário do site.
+            Cookies sÃ£o pequenos ficheiros de texto que os websites guardam no teu dispositivo quando os visitas.
+            SÃ£o amplamente utilizados para fazer os websites funcionar, melhorar a experiÃªncia de utilizaÃ§Ã£o
+            e fornecer informaÃ§Ãµes ao proprietÃ¡rio do site.
           </p>
         </Section>
 
         <Section title="2. Cookies que Utilizamos">
-          <p>Utilizamos três categorias de cookies:</p>
+          <p>Utilizamos trÃªs categorias de cookies:</p>
 
           <div className="space-y-4 mt-2">
             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
@@ -44,30 +44,30 @@ export default function CookiesPage() {
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-500/15 text-green-400 border border-green-500/20">
                   Essenciais
                 </span>
-                <span className="text-xs text-gray-500">Sempre ativos · Não requerem consentimento</span>
+                <span className="text-xs text-gray-500">Sempre ativos Â· NÃ£o requerem consentimento</span>
               </div>
               <p className="text-sm text-gray-400 mb-3">
-                Necessários para o funcionamento básico da plataforma. Sem eles, não seria possível autenticar
-                a sessão nem manter a segurança da conta.
+                NecessÃ¡rios para o funcionamento bÃ¡sico da plataforma. Sem eles, nÃ£o seria possÃ­vel autenticar
+                a sessÃ£o nem manter a seguranÃ§a da conta.
               </p>
               <table>
                 <thead>
                   <tr>
                     <th>Nome</th>
                     <th>Finalidade</th>
-                    <th>Duração</th>
+                    <th>DuraÃ§Ã£o</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td><code>refresh_token</code></td>
-                    <td>Autenticação — mantém a sessão ativa</td>
+                    <td>AutenticaÃ§Ã£o â€” mantÃ©m a sessÃ£o ativa</td>
                     <td>7 dias</td>
                   </tr>
                   <tr>
                     <td><code>admin_token</code></td>
-                    <td>Autenticação do painel administrativo interno</td>
-                    <td>Sessão</td>
+                    <td>AutenticaÃ§Ã£o do painel administrativo interno</td>
+                    <td>SessÃ£o</td>
                   </tr>
                 </tbody>
               </table>
@@ -78,17 +78,17 @@ export default function CookiesPage() {
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/20">
                   Funcionais
                 </span>
-                <span className="text-xs text-gray-500">Ativos por padrão · Melhoram a experiência</span>
+                <span className="text-xs text-gray-500">Ativos por padrÃ£o Â· Melhoram a experiÃªncia</span>
               </div>
               <p className="text-sm text-gray-400 mb-3">
-                Guardam as tuas preferências dentro da plataforma para que não tenhas de as configurar de cada vez.
+                Guardam as tuas preferÃªncias dentro da plataforma para que nÃ£o tenhas de as configurar de cada vez.
               </p>
               <table>
                 <thead>
                   <tr>
                     <th>Nome</th>
                     <th>Finalidade</th>
-                    <th>Duração</th>
+                    <th>DuraÃ§Ã£o</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -109,14 +109,14 @@ export default function CookiesPage() {
             <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/20">
-                  Analíticos
+                  AnalÃ­ticos
                 </span>
                 <span className="text-xs text-gray-500">Requerem consentimento</span>
               </div>
               <p className="text-sm text-gray-400">
-                De momento, <strong className="text-gray-300">não utilizamos cookies analíticos de terceiros</strong> (ex.: Google Analytics).
-                Utilizamos apenas métricas de servidor agregadas e anónimas para perceber a utilização do produto.
-                Se introduzirmos analytics no futuro, atualizaremos esta política e pediremos o teu consentimento.
+                De momento, <strong className="text-gray-300">nÃ£o utilizamos cookies analÃ­ticos de terceiros</strong> (ex.: Google Analytics).
+                Utilizamos apenas mÃ©tricas de servidor agregadas e anÃ³nimas para perceber a utilizaÃ§Ã£o do produto.
+                Se introduzirmos analytics no futuro, atualizaremos esta polÃ­tica e pediremos o teu consentimento.
               </p>
             </div>
           </div>
@@ -124,12 +124,12 @@ export default function CookiesPage() {
 
         <Section title="3. Cookies de Terceiros">
           <p>
-            A plataforma integra serviços de terceiros que podem definir os seus próprios cookies:
+            A plataforma integra serviÃ§os de terceiros que podem definir os seus prÃ³prios cookies:
           </p>
           <ul>
             <li>
-              <strong>Stripe</strong> — quando acedes ao portal de faturação, a Stripe pode definir cookies
-              para gestão de sessão de pagamento e prevenção de fraude.
+              <strong>Stripe</strong> â€” quando acedes ao portal de faturaÃ§Ã£o, a Stripe pode definir cookies
+              para gestÃ£o de sessÃ£o de pagamento e prevenÃ§Ã£o de fraude.
               Ver:{' '}
               <a href="https://stripe.com/privacy" className="text-brand-400 hover:underline" target="_blank" rel="noopener noreferrer">
                 stripe.com/privacy
@@ -137,48 +137,48 @@ export default function CookiesPage() {
             </li>
           </ul>
           <p>
-            Não temos controlo sobre os cookies de terceiros. Consulta as respetivas políticas de privacidade para mais informações.
+            NÃ£o temos controlo sobre os cookies de terceiros. Consulta as respetivas polÃ­ticas de privacidade para mais informaÃ§Ãµes.
           </p>
         </Section>
 
         <Section title="4. Como Gerir os Cookies">
-          <p>Tens várias formas de controlar os cookies:</p>
+          <p>Tens vÃ¡rias formas de controlar os cookies:</p>
           <ul>
             <li>
-              <strong>Definições do browser:</strong> A maioria dos browsers permite ver, bloquear e eliminar cookies
-              através das definições. Nota que bloquear cookies essenciais pode impedir o funcionamento da plataforma.
+              <strong>DefiniÃ§Ãµes do browser:</strong> A maioria dos browsers permite ver, bloquear e eliminar cookies
+              atravÃ©s das definiÃ§Ãµes. Nota que bloquear cookies essenciais pode impedir o funcionamento da plataforma.
             </li>
             <li>
-              <strong>Modo privado/incógnito:</strong> Os cookies não são guardados após o fecho da janela.
+              <strong>Modo privado/incÃ³gnito:</strong> Os cookies nÃ£o sÃ£o guardados apÃ³s o fecho da janela.
             </li>
             <li>
               <strong>Eliminar dados do site:</strong> Podes eliminar todos os cookies do Wpp Recebo
-              através das definições do browser (Definições → Privacidade → Limpar dados de navegação).
+              atravÃ©s das definiÃ§Ãµes do browser (DefiniÃ§Ãµes â†’ Privacidade â†’ Limpar dados de navegaÃ§Ã£o).
             </li>
           </ul>
           <p>
-            Para mais informações sobre como gerir cookies em browsers específicos:
+            Para mais informaÃ§Ãµes sobre como gerir cookies em browsers especÃ­ficos:
           </p>
           <ul>
             <li>Chrome: chrome://settings/cookies</li>
             <li>Firefox: about:preferences#privacy</li>
-            <li>Safari: Preferências → Privacidade</li>
+            <li>Safari: PreferÃªncias â†’ Privacidade</li>
             <li>Edge: edge://settings/privacy</li>
           </ul>
         </Section>
 
         <Section title="5. Base Legal">
           <p>
-            Os cookies essenciais são tratados com base na execução do contrato (art. 6.º, n.º 1, al. b) do RGPD)
-            e no interesse legítimo de segurança. Os cookies analíticos, quando utilizados, serão sempre baseados
-            no teu consentimento explícito (art. 6.º, n.º 1, al. a) do RGPD), em conformidade com a
-            Diretiva e-Privacy transposta para o direito português pela Lei n.º 41/2004.
+            Os cookies essenciais sÃ£o tratados com base na execuÃ§Ã£o do contrato (art. 6.Âº, n.Âº 1, al. b) do RGPD)
+            e no interesse legÃ­timo de seguranÃ§a. Os cookies analÃ­ticos, quando utilizados, serÃ£o sempre baseados
+            no teu consentimento explÃ­cito (art. 6.Âº, n.Âº 1, al. a) do RGPD), em conformidade com a
+            Diretiva e-Privacy transposta para o direito portuguÃªs pela Lei n.Âº 41/2004.
           </p>
         </Section>
 
         <Section title="6. Contacto">
           <p>
-            Para questões sobre o uso de cookies, contacta-nos em:{' '}
+            Para questÃµes sobre o uso de cookies, contacta-nos em:{' '}
             <a href="mailto:privacidade@wpprecebo.com" className="text-brand-400 hover:underline">
               privacidade@wpprecebo.com
             </a>
@@ -186,9 +186,9 @@ export default function CookiesPage() {
         </Section>
 
         <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-wrap gap-4 text-sm text-gray-500">
-          <Link href="/terms" className="hover:text-white transition-colors">Termos de Serviço</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">Política de Privacidade</Link>
-          <Link href="/" className="hover:text-white transition-colors">Voltar ao início</Link>
+          <Link href="/terms" className="hover:text-white transition-colors">Termos de ServiÃ§o</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">PolÃ­tica de Privacidade</Link>
+          <Link href="/" className="hover:text-white transition-colors">Voltar ao inÃ­cio</Link>
         </div>
       </main>
     </div>

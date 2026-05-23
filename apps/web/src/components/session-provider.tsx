@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,7 @@ export function SessionProvider(): null {
       .catch((err: unknown) => {
         const status = (err as { response?: { status?: number } })?.response?.status;
         if (status === 402) {
-          const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
+          const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.com';
           const rootUrl = process.env.NODE_ENV === 'development'
             ? 'http://localhost:3000'
             : `https://${appDomain}`;
