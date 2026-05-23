@@ -36,9 +36,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       sessionStorage.setItem('access_token', data.accessToken);
       set({ user: data.user, isAuthenticated: true });
+      // isLoading fica true propositadamente — a página vai redirecionar
+      // e não queremos que o botão fique activo durante a navegação
       return { tenantSlug: data.user.tenantSlug, accessToken: data.accessToken };
-    } finally {
+    } catch (err) {
       set({ isLoading: false });
+      throw err;
     }
   },
 
