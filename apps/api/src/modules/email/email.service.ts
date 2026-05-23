@@ -74,7 +74,7 @@ export class EmailService {
     tempPassword: string,
     tenantSlug: string,
   ): Promise<void> {
-    const domain = this.config.get<string>('APP_DOMAIN') ?? 'wpprecebo.pt';
+    const domain = this.config.get<string>('APP_DOMAIN') ?? 'wpprecebo.com';
     const loginUrl = this.appUrl.includes('localhost')
       ? `http://${tenantSlug}.localhost:3000/login`
       : `https://${tenantSlug}.${domain}/login`;
@@ -97,7 +97,7 @@ export class EmailService {
       <table width="560" cellpadding="0" cellspacing="0" style="background:#13131f;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;max-width:560px;width:100%;">
         <tr>
           <td style="padding:32px 40px 24px;border-bottom:1px solid rgba(255,255,255,0.06);">
-            <span style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;">Wpp<span style="color:#7c3aed;">Recebo</span></span>
+            <span style="font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;">Wpp<span style="color:#16a34a;">Recebo</span></span>
           </td>
         </tr>
         <tr><td style="padding:32px 40px;">${content}</td></tr>
@@ -114,7 +114,7 @@ export class EmailService {
   }
 
   private btn(url: string, label: string): string {
-    return `<a href="${url}" style="display:inline-block;margin:24px 0 8px;padding:12px 28px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;letter-spacing:0.2px;">${label}</a>`;
+    return `<a href="${url}" style="display:inline-block;margin:24px 0 8px;padding:12px 28px;background:#16a34a;color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;letter-spacing:0.2px;">${label}</a>`;
   }
 
   private h1(text: string): string {
@@ -164,11 +164,11 @@ export class EmailService {
           <td align="center" style="padding-bottom:32px;">
             <table cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:#7c3aed;border-radius:12px;width:44px;height:44px;text-align:center;vertical-align:middle;">
+                <td style="background:#16a34a;border-radius:12px;width:44px;height:44px;text-align:center;vertical-align:middle;">
                   <span style="font-size:22px;line-height:44px;">💬</span>
                 </td>
                 <td style="padding-left:12px;vertical-align:middle;">
-                  <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Wpp<span style="color:#7c3aed;">Recebo</span></span>
+                  <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Wpp<span style="color:#16a34a;">Recebo</span></span>
                 </td>
               </tr>
             </table>
@@ -183,7 +183,7 @@ export class EmailService {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="background:linear-gradient(135deg,#1a0a2e 0%,#0d0d18 60%);padding:40px 40px 32px;border-bottom:1px solid rgba(255,255,255,0.06);">
-                  <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;">Conta criada com sucesso</p>
+                  <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:1px;">Conta criada com sucesso</p>
                   <h1 style="margin:0 0 16px;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">Olá, ${firstName}! 👋</h1>
                   <p style="margin:0;font-size:16px;color:rgba(255,255,255,0.6);line-height:1.6;">O teu workspace no <strong style="color:#ffffff;">WppRecebo</strong> está pronto. Centraliza o teu WhatsApp, as tuas marcações e os teus clientes num só lugar.</p>
                 </td>
@@ -200,7 +200,7 @@ export class EmailService {
                   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
                     <tr>
                       <td style="width:36px;vertical-align:top;">
-                        <div style="width:32px;height:32px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:50%;text-align:center;line-height:32px;font-size:14px;font-weight:700;color:#7c3aed;">1</div>
+                        <div style="width:32px;height:32px;background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3);border-radius:50%;text-align:center;line-height:32px;font-size:14px;font-weight:700;color:#16a34a;">1</div>
                       </td>
                       <td style="padding-left:14px;vertical-align:top;padding-top:6px;">
                         <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#ffffff;">Conecta o teu WhatsApp Business</p>
@@ -242,7 +242,7 @@ export class EmailService {
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding:28px 40px ${verifyUrl ? '20px' : '40px'};">
-                  <a href="${dashboardUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;letter-spacing:0.2px;">Ir para o dashboard →</a>
+                  <a href="${dashboardUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;letter-spacing:0.2px;">Ir para o dashboard →</a>
                 </td>
               </tr>
             </table>
@@ -253,10 +253,10 @@ export class EmailService {
                 <td style="padding:0 40px 40px;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:16px 20px;">
-                        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#a78bfa;">Confirma o teu email</p>
+                      <td style="background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:12px;padding:16px 20px;">
+                        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#4ade80;">Confirma o teu email</p>
                         <p style="margin:0 0 12px;font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5;">Para garantires o acesso completo à tua conta, confirma o teu endereço de email.</p>
-                        <a href="${verifyUrl}" style="display:inline-block;background:rgba(124,58,237,0.25);color:#a78bfa;text-decoration:none;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid rgba(124,58,237,0.3);">Verificar email →</a>
+                        <a href="${verifyUrl}" style="display:inline-block;background:rgba(22,163,74,0.25);color:#4ade80;text-decoration:none;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid rgba(22,163,74,0.3);">Verificar email →</a>
                       </td>
                     </tr>
                   </table>
@@ -267,11 +267,11 @@ export class EmailService {
             <!-- Separador stats -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:rgba(124,58,237,0.06);border-top:1px solid rgba(124,58,237,0.15);padding:20px 40px;">
+                <td style="background:rgba(22,163,74,0.06);border-top:1px solid rgba(22,163,74,0.15);padding:20px 40px;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                       <td style="text-align:center;padding:0 8px;border-right:1px solid rgba(255,255,255,0.06);">
-                        <p style="margin:0 0 2px;font-size:20px;font-weight:700;color:#7c3aed;">∞</p>
+                        <p style="margin:0 0 2px;font-size:20px;font-weight:700;color:#16a34a;">∞</p>
                         <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Conversas</p>
                       </td>
                       <td style="text-align:center;padding:0 8px;border-right:1px solid rgba(255,255,255,0.06);">
