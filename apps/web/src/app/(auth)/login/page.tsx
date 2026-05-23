@@ -41,10 +41,10 @@ export default function LoginPage(): React.ReactElement {
   const onSubmit = async (data: LoginForm): Promise<void> => {
     try {
       const { tenantSlug, accessToken } = await login(data.email, data.password);
-      const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
-      const base = process.env.NODE_ENV === 'development'
-        ? `http://${tenantSlug}.localhost:3000`
-        : `https://${tenantSlug}.${appDomain}`;
+      // Derive o domínio raiz a partir do URL actual — não depende de env vars baked no build
+      const { protocol, hostname, port } = window.location;
+      const portSuffix = port ? `:${port}` : '';
+      const base = `${protocol}//${tenantSlug}.${hostname}${portSuffix}`;
       // /api/auth/sync define o cookie refresh_token para o subdomínio correcto
       window.location.href = `${base}/api/auth/sync?at=${encodeURIComponent(accessToken)}&next=/kanban`;
     } catch (err: unknown) {

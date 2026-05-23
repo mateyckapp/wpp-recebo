@@ -123,10 +123,10 @@ export default function RegisterPage(): React.ReactElement {
       sessionStorage.setItem('access_token', res.accessToken);
       setUser(res.user);
 
-      const appDomain = process.env['NEXT_PUBLIC_APP_DOMAIN'] ?? 'wpprecebo.pt';
-      const base = process.env.NODE_ENV === 'development'
-        ? `http://${data.slug}.localhost:3000`
-        : `https://${data.slug}.${appDomain}`;
+      // Derive o domínio raiz a partir do URL actual — não depende de env vars baked no build
+      const { protocol, hostname, port } = window.location;
+      const portSuffix = port ? `:${port}` : '';
+      const base = `${protocol}//${data.slug}.${hostname}${portSuffix}`;
       window.location.href = `${base}/api/auth/sync?at=${encodeURIComponent(res.accessToken)}&next=/kanban`;
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } }; message?: string };

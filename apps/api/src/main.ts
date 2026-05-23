@@ -33,6 +33,7 @@ async function bootstrap(): Promise<void> {
       appDomainRegex.test(origin) ||
       (nodeEnv !== 'production' && /^https?:\/\/([a-z0-9-]+\.)?localhost(:\d+)?$/.test(origin));
 
+    res.setHeader('Vary', 'Origin');
     if (isAllowed && origin) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
