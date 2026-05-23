@@ -536,6 +536,17 @@ export default function ContactsPage(): React.ReactElement {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [showImport, setShowImport] = useState(false);
+  const [showMobileGroupForm, setShowMobileGroupForm] = useState(false);
+  const [mobileGroupName, setMobileGroupName] = useState('');
+
+  const createGroupMutation = useMutation({
+    mutationFn: () => createGroup({ name: mobileGroupName.trim(), color: GROUP_COLORS[0]! }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['groups'] });
+      setMobileGroupName('');
+      setShowMobileGroupForm(false);
+    },
+  });
 
   const { data: groupsData = [] } = useQuery({
     queryKey: ['groups'],
@@ -588,8 +599,8 @@ export default function ContactsPage(): React.ReactElement {
           </div>
 
           {/* Chips de grupos — visíveis apenas no mobile */}
-          {groupsData.length > 0 && (
-            <div className="md:hidden mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="md:hidden mt-3 space-y-2">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               <button
                 onClick={() => { setSelectedGroupId(null); setSelectedId(null); }}
                 className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
@@ -615,8 +626,37 @@ export default function ContactsPage(): React.ReactElement {
                   {g.name}
                 </button>
               ))}
+              <button
+                onClick={() => setShowMobileGroupForm((v) => !v)}
+                className="flex-shrink-0 flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full border border-dashed border-white/[0.15] text-gray-600 hover:text-gray-300 hover:border-white/[0.3] transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Grupo
+              </button>
             </div>
-          )}
+            {showMobileGroupForm && (
+              <div className="flex gap-2">
+                <input
+                  autoFocus
+                  value={mobileGroupName}
+                  onChange={(e) => setMobileGroupName(e.target.value)}
+                  placeholder="Nome do grupo"
+                  className="flex-1 text-xs bg-white/[0.06] border border-white/[0.1] text-gray-200 placeholder-gray-600 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500/40"
+                  onKeyDown={(e) => { if (e.key === 'Enter' && mobileGroupName.trim()) createGroupMutation.mutate(); }}
+                />
+                <button
+                  onClick={() => { if (mobileGroupName.trim()) createGroupMutation.mutate(); }}
+                  disabled={!mobileGroupName.trim() || createGroupMutation.isPending}
+                  className="text-xs bg-brand-600 text-white rounded-lg px-3 py-1.5 hover:bg-brand-500 disabled:opacity-50 transition-colors"
+                >
+                  Criar
+                </button>
+                <button onClick={() => setShowMobileGroupForm(false)} className="text-xs text-gray-500 hover:text-gray-300">✕</button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto">
