@@ -1,8 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
 
-// Relative URL → proxied through Next.js rewrites (no CORS).
-// NEXT_PUBLIC_API_URL is kept for backwards compatibility in non-proxy environments.
-const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? '/api/v1';
+const API_URL = '/api/v1';
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,

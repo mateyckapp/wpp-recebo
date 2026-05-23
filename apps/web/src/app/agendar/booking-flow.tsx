@@ -22,7 +22,7 @@ type Step = 'service' | 'professional' | 'date' | 'time' | 'contact' | 'done';
 const STEPS: Step[] = ['service', 'professional', 'date', 'time', 'contact', 'done'];
 const STEP_LABELS = ['ServiÃ§o', 'Profissional', 'Data', 'Hora', 'Dados', 'Confirmado'];
 
-const API = process.env['NEXT_PUBLIC_API_URL'] ?? '/api/v1';
+const API = '/api/v1';
 
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

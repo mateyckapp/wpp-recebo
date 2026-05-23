@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -7,7 +7,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 
 const stripePromise = loadStripe(process.env['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'] ?? '');
 
-const API_URL = process.env['NEXT_PUBLIC_API_URL'] ?? '/api/v1';
+const API_URL = '/api/v1';
 
 interface CheckoutData {
   status: 'pending' | 'paid' | 'expired';

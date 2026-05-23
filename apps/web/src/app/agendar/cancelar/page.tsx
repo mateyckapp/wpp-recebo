@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-const API = process.env['NEXT_PUBLIC_API_URL'] ?? '/api/v1';
+const API = '/api/v1';
 
 interface AppointmentInfo {
   status: string;
