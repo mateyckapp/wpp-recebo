@@ -7,16 +7,19 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class PaymentsService {
   private readonly logger = new Logger(PaymentsService.name);
-  private readonly stripe: InstanceType<typeof Stripe>;
+  private readonly stripe: InstanceType<typeof Stripe> | null = null;
   private readonly appDomain: string;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
   ) {
-    this.stripe = new Stripe(this.config.getOrThrow('STRIPE_SECRET_KEY'), {
-      apiVersion: '2026-04-22.dahlia',
-    });
+    const stripeKey = this.config.get<string>('STRIPE_SECRET_KEY');
+    if (stripeKey) {
+      this.stripe = new Stripe(stripeKey, { apiVersion: '2026-04-22.dahlia' });
+    } else {
+      this.logger.warn('STRIPE_SECRET_KEY não configurada — pagamentos desativados');
+    }
     this.appDomain = this.config.get('APP_DOMAIN', 'wpprecebo.com');
   }
 
@@ -29,6 +32,8 @@ export class PaymentsService {
 
     const token = randomBytes(16).toString('base64url');
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+    if (!this.stripe) throw new BadRequestException('Pagamentos não configurados no servidor');
 
     const intent = await this.stripe.paymentIntents.create({
       amount: dto.amount,
@@ -87,6 +92,8 @@ export class PaymentsService {
     if (payment.expiresAt && payment.expiresAt < new Date()) {
       return { status: 'expired' };
     }
+
+    if (!this.stripe) throw new BadRequestException('Pagamentos não configurados no servidor');
 
     const intent = await this.stripe.paymentIntents.retrieve(payment.stripePaymentIntentId);
 
