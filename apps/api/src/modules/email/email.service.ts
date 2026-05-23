@@ -29,7 +29,12 @@ export class EmailService {
       return;
     }
     try {
-      await this.resend.emails.send({ from: FROM, to, subject, html });
+      const { error } = await this.resend.emails.send({ from: FROM, to, subject, html });
+      if (error) {
+        this.logger.error(`Erro Resend ao enviar para ${to}: ${JSON.stringify(error)}`);
+      } else {
+        this.logger.log(`Email enviado para ${to} | ${subject}`);
+      }
     } catch (err) {
       this.logger.error(`Erro ao enviar email para ${to}: ${String(err)}`);
     }
