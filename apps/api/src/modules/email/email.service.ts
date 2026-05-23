@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
 
-const FROM = 'WppRecebo <noreply@wpprecebo.pt>';
+const FROM = 'WppRecebo <noreply@wpprecebo.com>';
 
 @Injectable()
 export class EmailService {
