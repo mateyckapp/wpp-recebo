@@ -1,4 +1,4 @@
-﻿import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { TenantMiddleware, TenantRequest } from './tenant.middleware';
 import { Response, NextFunction } from 'express';
 
@@ -20,44 +20,44 @@ describe('TenantMiddleware', () => {
     jest.clearAllMocks();
   });
 
-  // â”€â”€â”€ extractSlug â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── extractSlug ────────────────────────────────────────────────────────────
 
   describe('extractSlug()', () => {
-    it('extrai slug de subdomÃ­nio em produÃ§Ã£o', () => {
+    it('extrai slug de subdomínio em produção', () => {
       process.env['APP_DOMAIN'] = 'wpprecebo.com';
       expect(middleware.extractSlug('mineyra.wpprecebo.com')).toBe('mineyra');
     });
 
-    it('extrai slug de subdomÃ­nio em localhost (dev)', () => {
+    it('extrai slug de subdomínio em localhost (dev)', () => {
       expect(middleware.extractSlug('demo.localhost')).toBe('demo');
     });
 
-    it('retorna null para subdomÃ­nios reservados', () => {
+    it('retorna null para subdomínios reservados', () => {
       process.env['APP_DOMAIN'] = 'wpprecebo.com';
       expect(middleware.extractSlug('api.wpprecebo.com')).toBeNull();
       expect(middleware.extractSlug('app.wpprecebo.com')).toBeNull();
       expect(middleware.extractSlug('www.wpprecebo.com')).toBeNull();
     });
 
-    it('retorna null para o domÃ­nio raiz sem subdomÃ­nio', () => {
+    it('retorna null para o domínio raiz sem subdomínio', () => {
       process.env['APP_DOMAIN'] = 'wpprecebo.com';
       expect(middleware.extractSlug('wpprecebo.com')).toBeNull();
     });
 
-    it('retorna null para localhost simples (sem subdomÃ­nio)', () => {
+    it('retorna null para localhost simples (sem subdomínio)', () => {
       expect(middleware.extractSlug('localhost')).toBeNull();
     });
 
-    it('retorna null para domÃ­nio diferente', () => {
+    it('retorna null para domínio diferente', () => {
       process.env['APP_DOMAIN'] = 'wpprecebo.com';
       expect(middleware.extractSlug('outrosite.pt')).toBeNull();
     });
   });
 
-  // â”€â”€â”€ use() â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── use() ──────────────────────────────────────────────────────────────────
 
   describe('use()', () => {
-    it('passa sem contexto quando nÃ£o hÃ¡ subdomÃ­nio de tenant', async () => {
+    it('passa sem contexto quando não há subdomínio de tenant', async () => {
       const req = { headers: { host: 'api.wpprecebo.com' } } as TenantRequest;
 
       await middleware.use(req, mockRes as Response, mockNext);
@@ -84,7 +84,7 @@ describe('TenantMiddleware', () => {
       expect(mockNext).toHaveBeenCalled();
     });
 
-    it('lanÃ§a NotFoundException quando tenant nÃ£o existe', async () => {
+    it('lança NotFoundException quando tenant não existe', async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue(null);
 
       const req = {
@@ -98,7 +98,7 @@ describe('TenantMiddleware', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
-    it('lanÃ§a NotFoundException quando tenant estÃ¡ SUSPENDED', async () => {
+    it('lança NotFoundException quando tenant está SUSPENDED', async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: 'tenant-123',
         slug: 'suspenso',
@@ -114,7 +114,7 @@ describe('TenantMiddleware', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('lanÃ§a NotFoundException quando tenant estÃ¡ CANCELLED', async () => {
+    it('lança NotFoundException quando tenant está CANCELLED', async () => {
       mockPrisma.tenant.findUnique.mockResolvedValue({
         id: 'tenant-123',
         slug: 'cancelado',

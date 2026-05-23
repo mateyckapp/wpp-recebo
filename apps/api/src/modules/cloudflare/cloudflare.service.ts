@@ -1,4 +1,4 @@
-﻿import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
@@ -21,7 +21,7 @@ export class CloudflareService {
 
   async createSubdomain(slug: string): Promise<void> {
     if (!this.isConfigured) {
-      this.logger.warn(`Cloudflare nÃ£o configurado â€” subdomÃ­nio ${slug}.${this.appDomain} nÃ£o criado`);
+      this.logger.warn(`Cloudflare não configurado — subdomínio ${slug}.${this.appDomain} não criado`);
       return;
     }
 
@@ -42,19 +42,19 @@ export class CloudflareService {
           },
         },
       );
-      this.logger.log(`SubdomÃ­nio criado: ${slug}.${this.appDomain}`);
+      this.logger.log(`Subdomínio criado: ${slug}.${this.appDomain}`);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const errors = (err.response?.data as { errors?: { message: string }[] })?.errors;
         const msg = errors?.[0]?.message ?? err.message;
-        // Registo jÃ¡ existe â€” nÃ£o Ã© um erro fatal
+        // Registo já existe — não é um erro fatal
         if (msg.includes('already exists') || err.response?.status === 409) {
-          this.logger.warn(`SubdomÃ­nio ${slug}.${this.appDomain} jÃ¡ existe no Cloudflare`);
+          this.logger.warn(`Subdomínio ${slug}.${this.appDomain} já existe no Cloudflare`);
           return;
         }
-        this.logger.error(`Erro ao criar subdomÃ­nio ${slug}: ${msg}`);
+        this.logger.error(`Erro ao criar subdomínio ${slug}: ${msg}`);
       } else {
-        this.logger.error(`Erro inesperado ao criar subdomÃ­nio ${slug}: ${String(err)}`);
+        this.logger.error(`Erro inesperado ao criar subdomínio ${slug}: ${String(err)}`);
       }
     }
   }
@@ -73,7 +73,7 @@ export class CloudflareService {
 
       const record = data.result[0];
       if (!record) {
-        this.logger.warn(`Registo DNS para ${slug}.${this.appDomain} nÃ£o encontrado`);
+        this.logger.warn(`Registo DNS para ${slug}.${this.appDomain} não encontrado`);
         return;
       }
 
@@ -82,9 +82,9 @@ export class CloudflareService {
         { headers: { Authorization: `Bearer ${this.apiToken}` } },
       );
 
-      this.logger.log(`SubdomÃ­nio removido: ${slug}.${this.appDomain}`);
+      this.logger.log(`Subdomínio removido: ${slug}.${this.appDomain}`);
     } catch (err: unknown) {
-      this.logger.error(`Erro ao remover subdomÃ­nio ${slug}: ${String(err)}`);
+      this.logger.error(`Erro ao remover subdomínio ${slug}: ${String(err)}`);
     }
   }
 }

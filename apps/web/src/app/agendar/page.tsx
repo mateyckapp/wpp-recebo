@@ -1,4 +1,4 @@
-﻿import { headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { BookingFlow } from './booking-flow';
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -40,11 +40,11 @@ function CancelPage() {
   const [cancelled, setCancelled] = useState(false);
 
   useEffect(() => {
-    if (!token) { setError('Link invÃ¡lido.'); setLoading(false); return; }
+    if (!token) { setError('Link inválido.'); setLoading(false); return; }
     fetch(`${API}/public/agenda/appointment?token=${token}`)
       .then((r) => r.ok ? r.json() : Promise.reject(r))
       .then((data: AppointmentInfo) => { setInfo(data); setLoading(false); })
-      .catch(() => { setError('Agendamento nÃ£o encontrado ou link expirado.'); setLoading(false); });
+      .catch(() => { setError('Agendamento não encontrado ou link expirado.'); setLoading(false); });
   }, [token]);
 
   async function handleCancel() {
@@ -73,7 +73,7 @@ function CancelPage() {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-gray-200 shadow-sm mb-3">
-            <span className="text-2xl">ðŸ“…</span>
+            <span className="text-2xl">📅</span>
           </div>
           <h1 className="text-xl font-semibold text-gray-900">Cancelar agendamento</h1>
           {info && <p className="text-sm text-gray-500 mt-1">{info.tenant.name}</p>}
@@ -96,17 +96,17 @@ function CancelPage() {
             <>
               {info.status === 'CANCELLED' ? (
                 <div className="p-8 text-center">
-                  <p className="text-gray-500 text-sm">Este agendamento jÃ¡ foi cancelado.</p>
+                  <p className="text-gray-500 text-sm">Este agendamento já foi cancelado.</p>
                 </div>
               ) : (
                 <>
                   <div className="p-5 space-y-3 text-sm border-b border-gray-100">
                     {[
-                      { label: 'ServiÃ§o', value: info.service.name },
+                      { label: 'Serviço', value: info.service.name },
                       { label: 'Profissional', value: info.professional.name },
                       { label: 'Data', value: formatDate(info.scheduledAt) },
                       { label: 'Hora', value: formatTime(info.scheduledAt) },
-                      { label: 'DuraÃ§Ã£o', value: formatDuration(info.service.duration) },
+                      { label: 'Duração', value: formatDuration(info.service.duration) },
                     ].map((row) => (
                       <div key={row.label} className="flex justify-between gap-4">
                         <span className="text-gray-400">{row.label}</span>
@@ -142,7 +142,7 @@ function CancelPage() {
           {!loading && cancelled && (
             <div className="p-8 text-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-2xl">
-                âœ“
+                ✓
               </div>
               <p className="font-semibold text-gray-900">Agendamento cancelado</p>
               <p className="text-sm text-gray-500">O teu agendamento foi cancelado com sucesso.</p>

@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import type { TenantInfo, PublicService, TenantBranding } from './page';
 
-// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Professional { id: string; name: string; specialty: string | null }
 interface Slot { time: string; professionalId: string; professionalName: string; dateTime: string }
@@ -20,11 +20,11 @@ interface BookingResult {
 type Step = 'service' | 'professional' | 'date' | 'time' | 'contact' | 'done';
 
 const STEPS: Step[] = ['service', 'professional', 'date', 'time', 'contact', 'done'];
-const STEP_LABELS = ['ServiÃ§o', 'Profissional', 'Data', 'Hora', 'Dados', 'Confirmado'];
+const STEP_LABELS = ['Serviço', 'Profissional', 'Data', 'Hora', 'Dados', 'Confirmado'];
 
 const API = '/api/v1';
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDuration(min: number) {
   if (min < 60) return `${min} min`;
@@ -47,10 +47,10 @@ function toDateString(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// â”€â”€ Mini Calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Mini Calendar ─────────────────────────────────────────────────────────────
 
-const DAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'SÃ¡b'];
-const MONTH_NAMES = ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (d: string) => void }) {
   const today = new Date();
@@ -77,9 +77,9 @@ function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <button onClick={prev} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">â€¹</button>
+        <button onClick={prev} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">‹</button>
         <span className="text-sm font-semibold text-gray-800">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-        <button onClick={next} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">â€º</button>
+        <button onClick={next} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">›</button>
       </div>
       {/* Day labels */}
       <div className="grid grid-cols-7 px-3 pt-3">
@@ -118,7 +118,7 @@ function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (
   );
 }
 
-// â”€â”€ Progress Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Progress Bar ──────────────────────────────────────────────────────────────
 
 function Progress({ current }: { current: Step }) {
   const idx = STEPS.indexOf(current);
@@ -137,7 +137,7 @@ function Progress({ current }: { current: Step }) {
   );
 }
 
-// â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main Component ────────────────────────────────────────────────────────────
 
 export function BookingFlow({ slug, info, services, branding }: { slug: string; info: TenantInfo; services: PublicService[]; branding?: TenantBranding }) {
   const color = branding?.primaryColor ?? '#7c3aed';
@@ -222,7 +222,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
     if (idx > 0) setStep(STEPS[idx - 1] as Step);
   }
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -258,13 +258,13 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
 
       <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
 
-        {/* â”€â”€ STEP: Service â”€â”€ */}
+        {/* ── STEP: Service ── */}
         {step === 'service' && (
           <div className="space-y-3">
-            <h2 className="text-base font-semibold text-gray-800">Escolhe o serviÃ§o</h2>
+            <h2 className="text-base font-semibold text-gray-800">Escolhe o serviço</h2>
             {services.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-400 text-sm">
-                Sem serviÃ§os disponÃ­veis de momento.
+                Sem serviços disponíveis de momento.
               </div>
             ) : (
               services.map((s) => (
@@ -280,7 +280,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                     </div>
                     <div className="text-right shrink-0">
                       {s.price != null && s.price > 0 && (
-                        <div className="text-sm font-semibold text-gray-900">â‚¬{s.price.toFixed(2)}</div>
+                        <div className="text-sm font-semibold text-gray-900">€{s.price.toFixed(2)}</div>
                       )}
                       <div className="text-xs text-gray-400 mt-0.5">{formatDuration(s.duration)}</div>
                     </div>
@@ -291,7 +291,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
           </div>
         )}
 
-        {/* â”€â”€ STEP: Professional â”€â”€ */}
+        {/* ── STEP: Professional ── */}
         {step === 'professional' && (
           <div className="space-y-3">
             <h2 className="text-base font-semibold text-gray-800">Escolhe o profissional</h2>
@@ -307,10 +307,10 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                   className="w-full bg-white border border-gray-100 rounded-2xl p-4 text-left hover:border-brand-300 hover:shadow-sm transition-all group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-500 text-lg">âœ¦</div>
+                    <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-500 text-lg">✦</div>
                     <div>
-                      <div className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Qualquer disponÃ­vel</div>
-                      <div className="text-sm text-gray-400">Ver todos os horÃ¡rios disponÃ­veis</div>
+                      <div className="font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">Qualquer disponível</div>
+                      <div className="text-sm text-gray-400">Ver todos os horários disponíveis</div>
                     </div>
                   </div>
                 </button>
@@ -334,15 +334,15 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                 ))}
 
                 {professionals.length === 0 && (
-                  <p className="text-sm text-gray-400 text-center py-4">Sem profissionais disponÃ­veis.</p>
+                  <p className="text-sm text-gray-400 text-center py-4">Sem profissionais disponíveis.</p>
                 )}
               </>
             )}
-            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">â† Voltar</button>
+            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">← Voltar</button>
           </div>
         )}
 
-        {/* â”€â”€ STEP: Date â”€â”€ */}
+        {/* ── STEP: Date ── */}
         {step === 'date' && (
           <div className="space-y-4">
             <h2 className="text-base font-semibold text-gray-800">Escolhe a data</h2>
@@ -350,16 +350,16 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
               selected={date}
               onSelect={(d) => { setDate(d); setSlot(null); setStep('time'); }}
             />
-            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">â† Voltar</button>
+            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">← Voltar</button>
           </div>
         )}
 
-        {/* â”€â”€ STEP: Time â”€â”€ */}
+        {/* ── STEP: Time ── */}
         {step === 'time' && (
           <div className="space-y-4">
             <h2 className="text-base font-semibold text-gray-800">
-              HorÃ¡rios disponÃ­veis
-              {date && <span className="text-gray-400 font-normal text-sm ml-2">â€” {formatShortDate(date + 'T12:00:00')}</span>}
+              Horários disponíveis
+              {date && <span className="text-gray-400 font-normal text-sm ml-2">— {formatShortDate(date + 'T12:00:00')}</span>}
             </h2>
 
             {loadingSlots ? (
@@ -368,7 +368,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
               </div>
             ) : slots.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-                <p className="text-gray-500 text-sm mb-3">NÃ£o hÃ¡ horÃ¡rios disponÃ­veis nesta data.</p>
+                <p className="text-gray-500 text-sm mb-3">Não há horários disponíveis nesta data.</p>
                 <button
                   onClick={() => setStep('date')}
                   className="text-sm text-brand-600 font-medium hover:text-brand-700 transition-colors"
@@ -395,11 +395,11 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
               </div>
             )}
 
-            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">â† Voltar</button>
+            <button onClick={goBack} className="text-sm text-gray-400 hover:text-gray-600 transition-colors">← Voltar</button>
           </div>
         )}
 
-        {/* â”€â”€ STEP: Contact â”€â”€ */}
+        {/* ── STEP: Contact ── */}
         {step === 'contact' && (
           <div className="space-y-4">
             <h2 className="text-base font-semibold text-gray-800">Os teus dados</h2>
@@ -408,7 +408,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
             {service && slot && (
               <div className="bg-brand-50 border border-brand-100 rounded-2xl p-4 text-sm space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">ServiÃ§o</span>
+                  <span className="text-gray-500">Serviço</span>
                   <span className="font-medium text-gray-800">{service.name}</span>
                 </div>
                 <div className="flex justify-between">
@@ -417,7 +417,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Data & Hora</span>
-                  <span className="font-medium text-gray-800">{formatShortDate(slot.dateTime)} Ã s {slot.time}</span>
+                  <span className="font-medium text-gray-800">{formatShortDate(slot.dateTime)} às {slot.time}</span>
                 </div>
               </div>
             )}
@@ -435,7 +435,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                  TelemÃ³vel <span className="text-red-400">*</span>
+                  Telemóvel <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="tel"
@@ -447,11 +447,11 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">ObservaÃ§Ãµes <span className="text-gray-300">(opcional)</span></label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Observações <span className="text-gray-300">(opcional)</span></label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Alguma informaÃ§Ã£o adicional..."
+                  placeholder="Alguma informação adicional..."
                   rows={3}
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 resize-none"
                 />
@@ -469,29 +469,29 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
             >
               {submitting ? 'A confirmar...' : 'Confirmar agendamento'}
             </button>
-            <button onClick={goBack} className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors py-1">â† Voltar</button>
+            <button onClick={goBack} className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors py-1">← Voltar</button>
           </div>
         )}
 
-        {/* â”€â”€ STEP: Done â”€â”€ */}
+        {/* ── STEP: Done ── */}
         {step === 'done' && result && (
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-sm">
               <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">âœ“</span>
+                <span className="text-3xl">✓</span>
               </div>
               <h2 className="text-lg font-semibold text-gray-900 mb-1">Agendamento confirmado!</h2>
-              <p className="text-sm text-gray-500">ReceberÃ¡s uma confirmaÃ§Ã£o em breve.</p>
+              <p className="text-sm text-gray-500">Receberás uma confirmação em breve.</p>
             </div>
 
             <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3 text-sm">
               {[
-                { label: 'ServiÃ§o', value: result.service.name },
+                { label: 'Serviço', value: result.service.name },
                 { label: 'Profissional', value: result.professional.name },
                 { label: 'Data', value: formatDate(result.scheduledAt) },
-                { label: 'DuraÃ§Ã£o', value: formatDuration(result.service.duration) },
+                { label: 'Duração', value: formatDuration(result.service.duration) },
                 ...(result.clientName ? [{ label: 'Nome', value: result.clientName }] : []),
-                { label: 'TelemÃ³vel', value: result.clientPhone },
+                { label: 'Telemóvel', value: result.clientPhone },
               ].map((row) => (
                 <div key={row.label} className="flex justify-between gap-3">
                   <span className="text-gray-400">{row.label}</span>
@@ -519,7 +519,7 @@ export function BookingFlow({ slug, info, services, branding }: { slug: string; 
                 >
                   Reagendar
                 </a>
-                <span>Â·</span>
+                <span>·</span>
                 <a
                   href={`/agendar/cancelar?token=${result.cancelToken}`}
                   className="underline hover:text-gray-600 transition-colors"

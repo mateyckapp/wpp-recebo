@@ -1,9 +1,9 @@
-﻿import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @ApiProperty({ example: 'admin@demo.wpprecebo.com' })
-  @IsEmail({}, { message: 'Email invÃ¡lido' })
+  @IsEmail({}, { message: 'Email inválido' })
   declare email: string;
 
   @ApiProperty({ example: 'password123' })

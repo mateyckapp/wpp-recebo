@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -69,24 +69,24 @@ export default function AdminPagamentosPage() {
     <div className="p-8 space-y-8">
       <div>
         <h1 className="text-xl font-semibold text-white">Pagamentos</h1>
-        <p className="text-sm text-white/40 mt-1">CobranÃ§as processadas atravÃ©s da plataforma</p>
+        <p className="text-sm text-white/40 mt-1">Cobranças processadas através da plataforma</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Volume total" value={formatAmount(data.volumeCents)} sub="pagamentos confirmados" />
-        <KpiCard label="TransaÃ§Ãµes" value={data.total} sub="total criadas" />
-        <KpiCard label="Pagas" value={data.paid} sub={`${data.total > 0 ? Math.round((data.paid / data.total) * 100) : 0}% de conversÃ£o`} />
+        <KpiCard label="Transações" value={data.total} sub="total criadas" />
+        <KpiCard label="Pagas" value={data.paid} sub={`${data.total > 0 ? Math.round((data.paid / data.total) * 100) : 0}% de conversão`} />
         <KpiCard label="Pendentes" value={data.pending} sub="aguardam pagamento" />
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-white/70 mb-4">TransaÃ§Ãµes recentes</h2>
+        <h2 className="text-sm font-semibold text-white/70 mb-4">Transações recentes</h2>
         <div className="rounded-2xl border border-white/8 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/8 text-left">
                 <th className="px-4 py-3 text-xs font-medium text-white/40">Cliente</th>
-                <th className="px-4 py-3 text-xs font-medium text-white/40">DescriÃ§Ã£o</th>
+                <th className="px-4 py-3 text-xs font-medium text-white/40">Descrição</th>
                 <th className="px-4 py-3 text-xs font-medium text-white/40">Valor</th>
                 <th className="px-4 py-3 text-xs font-medium text-white/40">Estado</th>
                 <th className="px-4 py-3 text-xs font-medium text-white/40">Data</th>
@@ -115,7 +115,7 @@ export default function AdminPagamentosPage() {
               {data.recent.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-8 text-center text-white/30 text-sm">
-                    Sem transaÃ§Ãµes ainda
+                    Sem transações ainda
                   </td>
                 </tr>
               )}

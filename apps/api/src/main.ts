@@ -1,4 +1,4 @@
-﻿import { NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -12,7 +12,7 @@ import type { Request, Response, NextFunction } from 'express';
 async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
 
-  // Sentry â€” init opcional, nÃ£o bloqueia o arranque se falhar
+  // Sentry — init opcional, não bloqueia o arranque se falhar
   try {
     const sentryDsn = process.env['SENTRY_DSN'];
     if (sentryDsn) {
@@ -25,7 +25,7 @@ async function bootstrap(): Promise<void> {
       logger.log('Sentry inicializado');
     }
   } catch (e) {
-    logger.warn(`Sentry nÃ£o inicializado: ${String(e)}`);
+    logger.warn(`Sentry não inicializado: ${String(e)}`);
   }
 
   const app = await NestFactory.create(AppModule, { rawBody: true });
@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
     `^https?://([a-z0-9-]+\\.)?${escapedDomain}(:\\d+)?$`,
   );
 
-  // CORS manual â€” antes de qualquer outro middleware
+  // CORS manual — antes de qualquer outro middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
     const origin = req.headers['origin'] as string | undefined;
     const isAllowed =
@@ -60,7 +60,7 @@ async function bootstrap(): Promise<void> {
         res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,X-API-Key');
       }
-      // Preflight sempre responde (mesmo a origens nÃ£o permitidas) para nÃ£o deixar pendente
+      // Preflight sempre responde (mesmo a origens não permitidas) para não deixar pendente
       if (req.method === 'OPTIONS') {
         res.status(isAllowed ? 204 : 403).end();
         return;
@@ -89,14 +89,14 @@ async function bootstrap(): Promise<void> {
   if (nodeEnv !== 'production') {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Wpp-Recebo API')
-      .setDescription('API de gestÃ£o de WhatsApp para negÃ³cios')
+      .setDescription('API de gestão de WhatsApp para negócios')
       .setVersion('1.0')
       .addBearerAuth()
       .build();
 
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('api/docs', app, document);
-    logger.log(`Swagger disponÃ­vel em http://localhost:${port}/api/docs`);
+    logger.log(`Swagger disponível em http://localhost:${port}/api/docs`);
   }
 
   await app.listen(port);

@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 
 export default function TrialExpiredPage(): React.ReactElement {
   return (
@@ -23,19 +23,19 @@ export default function TrialExpiredPage(): React.ReactElement {
         </div>
 
         <h1 className="text-2xl font-bold text-white mb-3 tracking-tight">
-          O teu perÃ­odo de trial terminou
+          O teu período de trial terminou
         </h1>
         <p className="text-gray-400 mb-8 leading-relaxed">
-          Os teus 14 dias grÃ¡tis chegaram ao fim. Subscreve um plano para continuar a gerir o teu WhatsApp e aceder a todas as funcionalidades.
+          Os teus 14 dias grátis chegaram ao fim. Subscreve um plano para continuar a gerir o teu WhatsApp e aceder a todas as funcionalidades.
         </p>
 
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 mb-6 text-left space-y-3">
           {[
             'Caixa de entrada unificada',
-            'Kanban e gestÃ£o de clientes',
+            'Kanban e gestão de clientes',
             'Assistente de IA 24/7',
             'Mensagens agendadas',
-            'RelatÃ³rios e analytics',
+            'Relatórios e analytics',
           ].map((f) => (
             <div key={f} className="flex items-center gap-2.5 text-sm text-gray-300">
               <svg className="h-4 w-4 text-brand-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -53,7 +53,7 @@ export default function TrialExpiredPage(): React.ReactElement {
           Ver planos e subscrever
         </a>
         <p className="text-xs text-gray-600">
-          DÃºvidas?{' '}
+          Dúvidas?{' '}
           <a href="mailto:suporte@wpprecebo.com" className="text-gray-500 hover:text-gray-400 transition-colors">
             Contacta o suporte
           </a>

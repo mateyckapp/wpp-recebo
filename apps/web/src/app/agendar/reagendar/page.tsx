@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const API = '/api/v1';
 
-// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Types ──────────────────────────────────────────────────────────────────────
 
 interface AppointmentInfo {
   status: string;
@@ -22,10 +22,10 @@ interface Slot {
   dateTime: string;
 }
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
-const MONTH_NAMES = ['Janeiro','Fevereiro','MarÃ§o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','SÃ¡b'];
+const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
 function formatDateLong(iso: string) {
   return new Date(iso).toLocaleDateString('pt-PT', {
@@ -45,7 +45,7 @@ function toDateString(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// â”€â”€ Mini calendÃ¡rio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Mini calendário ────────────────────────────────────────────────────────────
 
 function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (d: string) => void }) {
   const today = new Date();
@@ -71,9 +71,9 @@ function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <button onClick={prev} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors text-lg">â€¹</button>
+        <button onClick={prev} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors text-lg">‹</button>
         <span className="text-sm font-semibold text-gray-800">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-        <button onClick={next} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors text-lg">â€º</button>
+        <button onClick={next} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors text-lg">›</button>
       </div>
 
       <div className="grid grid-cols-7 px-3 pt-3 pb-1">
@@ -103,7 +103,7 @@ function Calendar({ selected, onSelect }: { selected: string | null; onSelect: (
   );
 }
 
-// â”€â”€ PÃ¡gina principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Página principal ───────────────────────────────────────────────────────────
 
 function ReschedulePage() {
   const params = useSearchParams();
@@ -123,20 +123,20 @@ function ReschedulePage() {
 
   // Carrega agendamento pelo token
   useEffect(() => {
-    if (!token) { setError('Link invÃ¡lido.'); setLoading(false); return; }
+    if (!token) { setError('Link inválido.'); setLoading(false); return; }
     fetch(`${API}/public/agenda/appointment?token=${token}`)
       .then((r) => r.ok ? r.json() : Promise.reject(r))
       .then((data: AppointmentInfo) => {
         if (data.status === 'CANCELLED') {
-          setError('Este agendamento jÃ¡ foi cancelado e nÃ£o pode ser reagendado.');
+          setError('Este agendamento já foi cancelado e não pode ser reagendado.');
         }
         setInfo(data);
         setLoading(false);
       })
-      .catch(() => { setError('Agendamento nÃ£o encontrado ou link expirado.'); setLoading(false); });
+      .catch(() => { setError('Agendamento não encontrado ou link expirado.'); setLoading(false); });
   }, [token]);
 
-  // Carrega horÃ¡rios quando a data Ã© selecionada
+  // Carrega horários quando a data é selecionada
   const loadSlots = useCallback(async (date: string) => {
     if (!info) return;
     setLoadingSlots(true);
@@ -144,12 +144,12 @@ function ReschedulePage() {
     setSelectedSlot(null);
     try {
       const url = `${API}/public/agenda/slots?slug=${info.tenant.slug}&date=${date}&serviceId=`;
-      // Precisamos do serviceId â€” vamos buscar via appointment info que tem service.name
-      // Como nÃ£o temos o serviceId directo, usamos o endpoint de slots sem filtro de profissional
-      // O backend devolve todos os slots disponÃ­veis para todos os profissionais
+      // Precisamos do serviceId — vamos buscar via appointment info que tem service.name
+      // Como não temos o serviceId directo, usamos o endpoint de slots sem filtro de profissional
+      // O backend devolve todos os slots disponíveis para todos os profissionais
       const res = await fetch(`${API}/public/agenda/slots?slug=${info.tenant.slug}&date=${date}&serviceId=_&_raw=1`);
-      // Fallback: busca slots genÃ©ricos â€” o endpoint real precisa do serviceId
-      // Usamos um trick: buscamos os profissionais e os serviÃ§os para obter o serviceId
+      // Fallback: busca slots genéricos — o endpoint real precisa do serviceId
+      // Usamos um trick: buscamos os profissionais e os serviços para obter o serviceId
       const profRes = await fetch(`${API}/public/agenda/professionals?slug=${info.tenant.slug}`);
       const svcRes = await fetch(`${API}/public/agenda/services?slug=${info.tenant.slug}`);
 
@@ -157,7 +157,7 @@ function ReschedulePage() {
 
       const services = await svcRes.json() as Array<{ id: string; name: string }>;
       const svc = services.find((s) => s.name === info.service.name);
-      if (!svc) throw new Error('ServiÃ§o nÃ£o encontrado');
+      if (!svc) throw new Error('Serviço não encontrado');
 
       const slotsRes = await fetch(`${API}/public/agenda/slots?slug=${info.tenant.slug}&date=${date}&serviceId=${svc.id}`);
       if (!slotsRes.ok) throw new Error();
@@ -201,7 +201,7 @@ function ReschedulePage() {
     }
   }
 
-  // â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -210,7 +210,7 @@ function ReschedulePage() {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-gray-200 shadow-sm mb-3">
-            <span className="text-2xl">ðŸ—“ï¸</span>
+            <span className="text-2xl">🗓️</span>
           </div>
           <h1 className="text-xl font-semibold text-gray-900">Reagendar</h1>
           {info && <p className="text-sm text-gray-500 mt-1">{info.tenant.name}</p>}
@@ -230,7 +230,7 @@ function ReschedulePage() {
           </div>
         )}
 
-        {/* ConteÃºdo */}
+        {/* Conteúdo */}
         {!loading && !error && info && (
           <div className="space-y-4">
 
@@ -239,11 +239,11 @@ function ReschedulePage() {
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Agendamento atual</p>
               <div className="space-y-2 text-sm">
                 {[
-                  { label: 'ServiÃ§o', value: info.service.name },
+                  { label: 'Serviço', value: info.service.name },
                   { label: 'Profissional', value: info.professional.name },
                   { label: 'Data', value: formatDateLong(info.scheduledAt) },
                   { label: 'Hora', value: formatTime(info.scheduledAt) },
-                  { label: 'DuraÃ§Ã£o', value: formatDuration(info.service.duration) },
+                  { label: 'Duração', value: formatDuration(info.service.duration) },
                 ].map((row) => (
                   <div key={row.label} className="flex justify-between gap-4">
                     <span className="text-gray-400">{row.label}</span>
@@ -261,7 +261,7 @@ function ReschedulePage() {
               </div>
             )}
 
-            {/* PASSO: Escolher horÃ¡rio */}
+            {/* PASSO: Escolher horário */}
             {step === 'slot' && selectedDate && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -269,13 +269,13 @@ function ReschedulePage() {
                     <p className="text-sm font-semibold text-gray-800">
                       {new Date(selectedDate + 'T12:00').toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">Escolhe o novo horÃ¡rio</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Escolhe o novo horário</p>
                   </div>
                   <button
                     onClick={() => { setStep('date'); setSelectedSlot(null); }}
                     className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    â† Mudar data
+                    ← Mudar data
                   </button>
                 </div>
 
@@ -287,7 +287,7 @@ function ReschedulePage() {
 
                 {!loadingSlots && slots.length === 0 && (
                   <div className="py-10 text-center">
-                    <p className="text-sm text-gray-500">Sem horÃ¡rios disponÃ­veis neste dia.</p>
+                    <p className="text-sm text-gray-500">Sem horários disponíveis neste dia.</p>
                     <button
                       onClick={() => setStep('date')}
                       className="mt-3 text-sm text-gray-600 underline hover:text-gray-800 transition-colors"
@@ -327,7 +327,7 @@ function ReschedulePage() {
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Novo agendamento</p>
                   <div className="space-y-2 text-sm">
                     {[
-                      { label: 'ServiÃ§o', value: info.service.name },
+                      { label: 'Serviço', value: info.service.name },
                       { label: 'Profissional', value: selectedSlot.professionalName },
                       { label: 'Data', value: new Date(selectedSlot.dateTime).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) },
                       { label: 'Hora', value: selectedSlot.time },
@@ -354,17 +354,17 @@ function ReschedulePage() {
                     onClick={() => { setStep('slot'); setSelectedSlot(null); setError(''); }}
                     className="w-full py-3 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
                   >
-                    â† Escolher outro horÃ¡rio
+                    ← Escolher outro horário
                   </button>
                 </div>
               </div>
             )}
 
-            {/* PASSO: ConcluÃ­do */}
+            {/* PASSO: Concluído */}
             {step === 'done' && selectedSlot && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center space-y-3">
                 <div className="w-14 h-14 rounded-full bg-green-50 border border-green-100 flex items-center justify-center mx-auto text-2xl">
-                  âœ“
+                  ✓
                 </div>
                 <p className="font-semibold text-gray-900">Reagendado com sucesso!</p>
                 <p className="text-sm text-gray-500">
@@ -372,9 +372,9 @@ function ReschedulePage() {
                   <strong className="text-gray-700">
                     {new Date(selectedSlot.dateTime).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}
                   </strong>{' '}
-                  Ã s <strong className="text-gray-700">{selectedSlot.time}</strong>.
+                  às <strong className="text-gray-700">{selectedSlot.time}</strong>.
                 </p>
-                <p className="text-xs text-gray-400">ReceberÃ¡s uma confirmaÃ§Ã£o em breve.</p>
+                <p className="text-xs text-gray-400">Receberás uma confirmação em breve.</p>
               </div>
             )}
 
