@@ -704,7 +704,7 @@ export default function AgendaPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="px-8 py-5 border-b border-white/[0.06] flex items-center justify-between gap-4 flex-wrap flex-shrink-0">
+      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-white/[0.06] flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
         <div>
           <h1 className="text-xl font-semibold text-white">Agenda</h1>
           <p className="text-sm text-gray-500 mt-0.5">Gestão de marcações e horários</p>
@@ -721,23 +721,23 @@ export default function AgendaPage() {
           </button>
           <Link
             href="/agenda/notificacoes"
-            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
           >
             Notificações
           </Link>
           <Link
             href="/agenda/configurar"
-            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
           >
             Configurar
           </Link>
         </div>
       </div>
 
-      {/* Content: two-column layout */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Content: two-column on desktop, single column on mobile */}
+      <div className="flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-hidden">
         {/* Left: Calendar */}
-        <div className="w-72 flex-shrink-0 border-r border-white/[0.06] overflow-y-auto p-4">
+        <div className="md:w-72 md:flex-shrink-0 border-b md:border-b-0 md:border-r border-white/[0.06] md:overflow-y-auto p-4">
           <Calendar
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
@@ -758,7 +758,7 @@ export default function AgendaPage() {
         </div>
 
         {/* Right: Day view */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {/* Day header */}
           <div className="flex items-center justify-between mb-5">
             <div>

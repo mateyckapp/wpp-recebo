@@ -73,7 +73,7 @@ function GroupsPanel({
   });
 
   return (
-    <div className="flex flex-col h-full border-r border-white/[0.06] w-48 flex-shrink-0">
+    <div className="hidden md:flex flex-col h-full border-r border-white/[0.06] w-48 flex-shrink-0">
       <div className="px-3 pt-4 pb-2 border-b border-white/[0.06]">
         <div className="flex items-center justify-between mb-1">
           <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Grupos</span>
