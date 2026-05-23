@@ -128,18 +128,147 @@ export class EmailService {
   }
 
   private templateWelcome(name: string, dashboardUrl: string): string {
-    return this.wrap(`
-      ${this.h1('Bem-vindo ao WppRecebo! 🎉')}
-      ${this.p(`Olá ${name}, o teu workspace foi criado com sucesso.`)}
-      ${this.p('Estás a um passo de centralizar o teu WhatsApp e a tua agenda num só lugar.')}
-      <div style="margin:20px 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;">Próximos passos</p>
-        <p style="margin:4px 0;font-size:14px;color:rgba(255,255,255,0.7);">1. Conecta o teu número WhatsApp Business</p>
-        <p style="margin:4px 0;font-size:14px;color:rgba(255,255,255,0.7);">2. Cria os teus serviços e profissionais na Agenda</p>
-        <p style="margin:4px 0;font-size:14px;color:rgba(255,255,255,0.7);">3. Partilha o teu link de agendamento com os clientes</p>
-      </div>
-      ${this.btn(dashboardUrl, 'Ir para o dashboard')}
-    `);
+    const firstName = name.split(' ')[0] ?? name;
+    return `<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bem-vindo ao WppRecebo</title>
+</head>
+<body style="margin:0;padding:0;background:#060609;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#060609;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+
+        <!-- Logo header -->
+        <tr>
+          <td align="center" style="padding-bottom:32px;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:#7c3aed;border-radius:12px;width:44px;height:44px;text-align:center;vertical-align:middle;">
+                  <span style="font-size:22px;line-height:44px;">💬</span>
+                </td>
+                <td style="padding-left:12px;vertical-align:middle;">
+                  <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Wpp<span style="color:#7c3aed;">Recebo</span></span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Card principal -->
+        <tr>
+          <td style="background:#0d0d18;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;">
+
+            <!-- Hero com gradiente -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:linear-gradient(135deg,#1a0a2e 0%,#0d0d18 60%);padding:40px 40px 32px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                  <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;">Conta criada com sucesso</p>
+                  <h1 style="margin:0 0 16px;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;line-height:1.2;">Olá, ${firstName}! 👋</h1>
+                  <p style="margin:0;font-size:16px;color:rgba(255,255,255,0.6);line-height:1.6;">O teu workspace no <strong style="color:#ffffff;">WppRecebo</strong> está pronto. Centraliza o teu WhatsApp, as tuas marcações e os teus clientes num só lugar.</p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Próximos passos -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:32px 40px 8px;">
+                  <p style="margin:0 0 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.8px;">Por onde começar</p>
+
+                  <!-- Passo 1 -->
+                  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+                    <tr>
+                      <td style="width:36px;vertical-align:top;">
+                        <div style="width:32px;height:32px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:50%;text-align:center;line-height:32px;font-size:14px;font-weight:700;color:#7c3aed;">1</div>
+                      </td>
+                      <td style="padding-left:14px;vertical-align:top;padding-top:6px;">
+                        <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#ffffff;">Conecta o teu WhatsApp Business</p>
+                        <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.5;">Liga o teu número e começa a receber mensagens no painel.</p>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Passo 2 -->
+                  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
+                    <tr>
+                      <td style="width:36px;vertical-align:top;">
+                        <div style="width:32px;height:32px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);border-radius:50%;text-align:center;line-height:32px;font-size:14px;font-weight:700;color:#10b981;">2</div>
+                      </td>
+                      <td style="padding-left:14px;vertical-align:top;padding-top:6px;">
+                        <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#ffffff;">Configura a tua Agenda</p>
+                        <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.5;">Adiciona serviços e profissionais para aceitar marcações automáticas.</p>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Passo 3 -->
+                  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:0;">
+                    <tr>
+                      <td style="width:36px;vertical-align:top;">
+                        <div style="width:32px;height:32px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:50%;text-align:center;line-height:32px;font-size:14px;font-weight:700;color:#f59e0b;">3</div>
+                      </td>
+                      <td style="padding-left:14px;vertical-align:top;padding-top:6px;">
+                        <p style="margin:0 0 3px;font-size:14px;font-weight:600;color:#ffffff;">Partilha com os teus clientes</p>
+                        <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.5;">O teu link de agendamento público está pronto para partilhar.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- CTA -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:28px 40px 40px;">
+                  <a href="${dashboardUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;letter-spacing:0.2px;">Ir para o dashboard →</a>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Separador stats -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:rgba(124,58,237,0.06);border-top:1px solid rgba(124,58,237,0.15);padding:20px 40px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="text-align:center;padding:0 8px;border-right:1px solid rgba(255,255,255,0.06);">
+                        <p style="margin:0 0 2px;font-size:20px;font-weight:700;color:#7c3aed;">∞</p>
+                        <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Conversas</p>
+                      </td>
+                      <td style="text-align:center;padding:0 8px;border-right:1px solid rgba(255,255,255,0.06);">
+                        <p style="margin:0 0 2px;font-size:20px;font-weight:700;color:#10b981;">24/7</p>
+                        <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Disponível</p>
+                      </td>
+                      <td style="text-align:center;padding:0 8px;">
+                        <p style="margin:0 0 2px;font-size:20px;font-weight:700;color:#f59e0b;">Auto</p>
+                        <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Marcações</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:24px 0;text-align:center;">
+            <p style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.2);">© 2026 WppRecebo · Todos os direitos reservados</p>
+            <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.15);">Este email foi enviado automaticamente. Por favor não respondas.</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
   }
 
   private templateAgentInvitation(
