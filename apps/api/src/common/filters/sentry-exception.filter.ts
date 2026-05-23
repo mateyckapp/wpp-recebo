@@ -1,5 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
-import * as Sentry from '@sentry/node';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 @Catch()
@@ -11,13 +10,19 @@ export class SentryExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const status = exception instanceof HttpException ? exception.getStatus() : 500;
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (status >= 500) {
-      Sentry.captureException(exception, {
-        extra: { path: request.url, method: request.method },
-      });
-      this.logger.error(`Erro interno: ${String(exception)}`);
+      this.logger.error(
+        `[${request.method}] ${request.url} → ${status}: ${String(exception)}`,
+      );
+      // Sentry captura de forma lazy para não bloquear se não estiver instalado
+      void import('@sentry/node')
+        .then((Sentry) => Sentry.captureException(exception))
+        .catch(() => undefined);
     }
 
     if (!response.headersSent) {
