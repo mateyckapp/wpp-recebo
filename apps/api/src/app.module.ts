@@ -26,6 +26,7 @@ import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { OutboundWebhooksModule } from './modules/outbound-webhooks/outbound-webhooks.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { appConfig } from './config/app.config';
 
@@ -67,6 +68,7 @@ import { appConfig } from './config/app.config';
     AnalyticsModule,
     OutboundWebhooksModule,
     ApiKeysModule,
+    PaymentsModule,
   ],
   providers: [
     {

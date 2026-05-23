@@ -17,6 +17,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.1",
     "@sentry/nextjs": "^10.53.1",
+    "@stripe/react-stripe-js": "^6.4.0",
+    "@stripe/stripe-js": "^9.6.0",
     "@tanstack/react-query": "^5.59.20",
     "@wpp-recebo/shared": "workspace:*",
     "@wpp-recebo/ui": "workspace:*",

@@ -8,6 +8,7 @@ const NAV = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '◈' },
   { href: '/admin/tenants', label: 'Clientes', icon: '⊞' },
   { href: '/admin/billing', label: 'Faturação', icon: '◎' },
+  { href: '/admin/pagamentos', label: 'Pagamentos', icon: '◉' },
   { href: '/admin/pixels', label: 'Pixels & Ads', icon: '⬡' },
   { href: '/admin/settings', label: 'Configurações', icon: '⊕' },
 ];

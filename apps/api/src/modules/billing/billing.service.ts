@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import Stripe from 'stripe';
 import { Plan } from '@prisma/client';
+import { PaymentsService } from '../payments/payments.service';
 
 const PRICE_TO_PLAN: Record<string, Plan> = {};
 
@@ -16,6 +17,7 @@ export class BillingService {
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly paymentsService: PaymentsService,
   ) {
     this.stripe = new Stripe(this.config.getOrThrow('STRIPE_SECRET_KEY'), {
       apiVersion: '2026-04-22.dahlia',
@@ -182,6 +184,18 @@ export class BillingService {
           where: { id: tenant.id },
           data: { plan: Plan.START, status: 'CANCELLED', stripeSubscriptionId: null },
         });
+        break;
+      }
+
+      case 'payment_intent.succeeded': {
+        const pi = event.data.object as { id: string };
+        await this.paymentsService.handlePaymentSucceeded(pi.id);
+        break;
+      }
+
+      case 'payment_intent.payment_failed': {
+        const pi = event.data.object as { id: string };
+        await this.paymentsService.handlePaymentFailed(pi.id);
         break;
       }
     }
