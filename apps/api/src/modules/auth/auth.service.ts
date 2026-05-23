@@ -110,11 +110,14 @@ export class AuthService {
     const user = await this.usersService.findByIdOrThrow(userId);
     if (user.emailVerified) return;
 
-    const token = await this.jwtService.signAsync(
-      { sub: user.id, email: user.email, purpose: 'email-verification' },
-      { secret: this.configService.get<string>('app.jwt.secret'), expiresIn: '24h' },
-    );
-    void this.email.sendEmailVerification(user.email, user.name, token);
+    const [token, tenant] = await Promise.all([
+      this.jwtService.signAsync(
+        { sub: user.id, email: user.email, purpose: 'email-verification' },
+        { secret: this.configService.get<string>('app.jwt.secret'), expiresIn: '24h' },
+      ),
+      this.prisma.tenant.findUnique({ where: { id: user.tenantId }, select: { slug: true } }),
+    ]);
+    void this.email.sendEmailVerification(user.email, user.name, token, tenant?.slug ?? '');
   }
 
   async issueRefreshToken(user: JwtPayload): Promise<string> {

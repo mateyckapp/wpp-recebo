@@ -49,8 +49,11 @@ export class EmailService {
 
   // ── Email verification ────────────────────────────────────────────────────
 
-  async sendEmailVerification(to: string, name: string, token: string): Promise<void> {
-    const url = `${this.appUrl}/verify-email?token=${token}`;
+  async sendEmailVerification(to: string, name: string, token: string, tenantSlug: string): Promise<void> {
+    const domain = this.config.get<string>('APP_DOMAIN') ?? 'wpprecebo.com';
+    const url = this.appUrl.includes('localhost')
+      ? `http://${tenantSlug}.localhost:3000/verify-email?token=${token}`
+      : `https://${tenantSlug}.${domain}/verify-email?token=${token}`;
     await this.send(to, 'Verifica o teu email — WppRecebo', this.templateEmailVerification(name, url));
   }
 
@@ -61,7 +64,11 @@ export class EmailService {
     const dashboardUrl = this.appUrl.includes('localhost')
       ? `http://${tenantSlug}.localhost:3000/kanban`
       : `https://${tenantSlug}.${domain}/kanban`;
-    const verifyUrl = verificationToken ? `${this.appUrl}/verify-email?token=${verificationToken}` : undefined;
+    const verifyUrl = verificationToken
+      ? (this.appUrl.includes('localhost')
+          ? `http://${tenantSlug}.localhost:3000/verify-email?token=${verificationToken}`
+          : `https://${tenantSlug}.${domain}/verify-email?token=${verificationToken}`)
+      : undefined;
     await this.send(to, 'Bem-vindo ao WppRecebo! 🎉', this.templateWelcome(name, dashboardUrl, verifyUrl));
   }
 

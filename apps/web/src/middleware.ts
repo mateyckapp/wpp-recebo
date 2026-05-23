@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 const ROOT_ONLY_PATHS = ['/login', '/register', '/forgot-password', '/reset-password'];
 
 // Páginas públicas em subdomínios (não precisam de refresh_token)
-const SUBDOMAIN_PUBLIC_PATHS = ['/agendar', '/auth/hydrate'];
+const SUBDOMAIN_PUBLIC_PATHS = ['/agendar', '/auth/hydrate', '/verify-email'];
 
 const RESERVED_SLUGS = new Set(['app', 'api', 'docs', 'www', 'staging', 'admin', 'mail']);
 
