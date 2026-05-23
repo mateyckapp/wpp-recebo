@@ -1,61 +1,72 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Request } from '@nestjs/common';
 import { AgendaService } from './agenda.service';
+import { PlanLimitsService } from '../plan-limits/plan-limits.service';
 import { AppointmentStatus } from '@prisma/client';
 
 @Controller('agenda')
 export class AgendaController {
-  constructor(private readonly agenda: AgendaService) {}
+  constructor(
+    private readonly agenda: AgendaService,
+    private readonly planLimits: PlanLimitsService,
+  ) {}
 
   // ── Services ──────────────────────────────────────────────────────────────
 
   @Get('services')
-  getServices(@Request() req: { user: { tenantId: string } }) {
+  async getServices(@Request() req: { user: { tenantId: string } }) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.getServices(req.user.tenantId);
   }
 
   @Post('services')
-  createService(
+  async createService(
     @Request() req: { user: { tenantId: string } },
     @Body() body: { name: string; duration: number; price?: number; description?: string },
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.createService(req.user.tenantId, body);
   }
 
   @Patch('services/:id')
-  updateService(
+  async updateService(
     @Request() req: { user: { tenantId: string } },
     @Param('id') id: string,
     @Body() body: Partial<{ name: string; duration: number; price: number; description: string; active: boolean }>,
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.updateService(id, req.user.tenantId, body);
   }
 
   @Delete('services/:id')
-  deleteService(@Request() req: { user: { tenantId: string } }, @Param('id') id: string) {
+  async deleteService(@Request() req: { user: { tenantId: string } }, @Param('id') id: string) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.deleteService(id, req.user.tenantId);
   }
 
   // ── Professionals ─────────────────────────────────────────────────────────
 
   @Get('professionals')
-  getProfessionals(@Request() req: { user: { tenantId: string } }) {
+  async getProfessionals(@Request() req: { user: { tenantId: string } }) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.getProfessionals(req.user.tenantId);
   }
 
   @Post('professionals')
-  createProfessional(
+  async createProfessional(
     @Request() req: { user: { tenantId: string } },
     @Body() body: { name: string; specialty?: string },
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.createProfessional(req.user.tenantId, body);
   }
 
   @Patch('professionals/:id')
-  updateProfessional(
+  async updateProfessional(
     @Request() req: { user: { tenantId: string } },
     @Param('id') id: string,
     @Body() body: Partial<{ name: string; specialty: string; active: boolean }>,
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.updateProfessional(id, req.user.tenantId, body);
   }
 
@@ -106,19 +117,20 @@ export class AgendaController {
   // ── Slots ─────────────────────────────────────────────────────────────────
 
   @Get('slots')
-  getSlots(
+  async getSlots(
     @Request() req: { user: { tenantId: string } },
     @Query('date') date: string,
     @Query('serviceId') serviceId: string,
     @Query('professionalId') professionalId?: string,
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.getAvailableSlots(req.user.tenantId, date, serviceId, professionalId);
   }
 
   // ── Appointments ──────────────────────────────────────────────────────────
 
   @Get('appointments')
-  getAppointments(
+  async getAppointments(
     @Request() req: { user: { tenantId: string } },
     @Query('date') date?: string,
     @Query('startDate') startDate?: string,
@@ -126,23 +138,26 @@ export class AgendaController {
     @Query('status') status?: AppointmentStatus,
     @Query('professionalId') professionalId?: string,
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.getAppointments(req.user.tenantId, { date, startDate, endDate, status, professionalId });
   }
 
   @Post('appointments')
-  createAppointment(
+  async createAppointment(
     @Request() req: { user: { tenantId: string } },
     @Body() body: { contactId: string; serviceId: string; professionalId: string; scheduledAt: string; notes?: string },
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.createAppointment({ tenantId: req.user.tenantId, ...body });
   }
 
   @Patch('appointments/:id/status')
-  updateStatus(
+  async updateStatus(
     @Request() req: { user: { tenantId: string } },
     @Param('id') id: string,
     @Body() body: { status: AppointmentStatus },
   ) {
+    await this.planLimits.assertAgendaEnabled(req.user.tenantId);
     return this.agenda.updateAppointmentStatus(id, req.user.tenantId, body.status);
   }
 }

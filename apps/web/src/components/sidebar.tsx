@@ -1,16 +1,42 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth.store';
+import { api } from '@/lib/api';
 import { cn } from '@wpp-recebo/ui';
 import { OnboardingChecklist } from './onboarding-checklist';
 import { NotificationsBell } from './notifications-bell';
 import { fetchOnboardingStatus, countCompleted, TOTAL_STEPS } from '@/lib/onboarding';
 
-const navItems: Array<{ href: string; label: string; icon: React.ReactElement }> = [
+interface PlanLimits {
+  agendaEnabled: boolean;
+  reportsEnabled: boolean;
+  campaignsEnabled: boolean;
+  aiEnabled: boolean;
+  scheduledMessagesEnabled: boolean;
+}
+
+interface PlanLimitsResponse {
+  plan: string;
+  limits: PlanLimits;
+}
+
+async function fetchPlanLimits(): Promise<PlanLimitsResponse> {
+  const { data } = await api.get<PlanLimitsResponse>('/billing/limits');
+  return data;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ReactElement;
+  requiresFeature?: keyof PlanLimits;
+}
+
+const navItems: NavItem[] = [
   {
     href: '/kanban',
     label: 'Kanban',
@@ -32,6 +58,7 @@ const navItems: Array<{ href: string; label: string; icon: React.ReactElement }>
   {
     href: '/agenda',
     label: 'Agenda',
+    requiresFeature: 'agendaEnabled',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -50,6 +77,7 @@ const navItems: Array<{ href: string; label: string; icon: React.ReactElement }>
   {
     href: '/relatorios',
     label: 'Relatórios',
+    requiresFeature: 'reportsEnabled',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -58,7 +86,7 @@ const navItems: Array<{ href: string; label: string; icon: React.ReactElement }>
   },
   {
     href: '/invoices',
-    label: 'Faturas',
+    label: 'Plano & Faturas',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
@@ -77,8 +105,17 @@ const navItems: Array<{ href: string; label: string; icon: React.ReactElement }>
   },
 ];
 
+function LockIcon() {
+  return (
+    <svg className="h-3.5 w-3.5 text-gray-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+    </svg>
+  );
+}
+
 export function Sidebar(): React.ReactElement {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuthStore();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [dismissed, setDismissed] = useState(() =>
@@ -91,6 +128,12 @@ export function Sidebar(): React.ReactElement {
     staleTime: 60_000,
   });
 
+  const { data: planData } = useQuery({
+    queryKey: ['plan-limits'],
+    queryFn: fetchPlanLimits,
+    staleTime: 5 * 60_000,
+  });
+
   const completed = onboardingStatus ? countCompleted(onboardingStatus) : 0;
   const allDone = completed === TOTAL_STEPS;
 
@@ -98,6 +141,12 @@ export function Sidebar(): React.ReactElement {
     localStorage.setItem('onboarding_dismissed', '1');
     setDismissed(true);
     setShowOnboarding(false);
+  };
+
+  const isFeatureEnabled = (feature: keyof PlanLimits | undefined): boolean => {
+    if (!feature) return true;
+    if (!planData) return true; // optimistic while loading
+    return planData.limits[feature] === true;
   };
 
   return (
@@ -118,6 +167,23 @@ export function Sidebar(): React.ReactElement {
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
+          const enabled = isFeatureEnabled(item.requiresFeature);
+
+          if (!enabled) {
+            return (
+              <button
+                key={item.href}
+                onClick={() => router.push('/invoices')}
+                title="Faz upgrade para aceder a esta funcionalidade"
+                className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-600 hover:bg-white/[0.03] hover:text-gray-500 cursor-pointer group"
+              >
+                <span className="opacity-50">{item.icon}</span>
+                <span className="flex-1 text-left opacity-50">{item.label}</span>
+                <LockIcon />
+              </button>
+            );
+          }
+
           return (
             <Link
               key={item.href}
@@ -166,6 +232,16 @@ export function Sidebar(): React.ReactElement {
       {/* Painel do checklist — fora do nav para não ser cortado pelo overflow */}
       {showOnboarding && !dismissed && (
         <OnboardingChecklist onClose={() => setShowOnboarding(false)} onDismiss={handleDismiss} />
+      )}
+
+      {/* Plano atual */}
+      {planData && (
+        <div className="px-3 pb-2">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 flex items-center justify-between">
+            <span className="text-xs text-gray-500">Plano</span>
+            <span className="text-xs font-semibold text-gray-300">{planData.plan}</span>
+          </div>
+        </div>
       )}
 
       {/* Utilizador */}

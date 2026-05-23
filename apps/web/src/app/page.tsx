@@ -1,4 +1,5 @@
 import { FadeIn, FadeInStagger, FadeInItem } from '@/components/landing/animated-section';
+import { LandingNav } from '@/components/landing/landing-nav';
 import { LandingNavSession } from '@/components/landing/landing-nav-session';
 
 const REGISTER_URL = '/register';
@@ -274,12 +275,7 @@ export default function LandingPage() {
             </div>
             <span className="font-semibold text-white tracking-tight">Wpp Recebo</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm text-gray-400">
-            <a href="#funcionalidades" className="hover:text-white transition-colors">Funcionalidades</a>
-            <a href="#agenda" className="hover:text-white transition-colors">Agenda</a>
-            <a href="#precos" className="hover:text-white transition-colors">Preços</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-          </nav>
+          <LandingNav />
           <LandingNavSession />
         </div>
       </header>

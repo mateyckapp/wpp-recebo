@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Param, Body, HttpCode } from '@nestjs/common';
 import { ScheduledMessagesService } from './scheduled-messages.service';
+import { PlanLimitsService } from '../plan-limits/plan-limits.service';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { IsString, IsNotEmpty, MaxLength, IsDateString } from 'class-validator';
 import type { JwtPayload } from '@wpp-recebo/shared';
@@ -17,15 +18,20 @@ class CreateScheduledMessageDto {
 
 @Controller('scheduled-messages')
 export class ScheduledMessagesController {
-  constructor(private readonly service: ScheduledMessagesService) {}
+  constructor(
+    private readonly service: ScheduledMessagesService,
+    private readonly planLimits: PlanLimitsService,
+  ) {}
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload) {
+  async findAll(@CurrentUser() user: JwtPayload) {
+    await this.planLimits.assertScheduledMessagesEnabled(user.tenantId);
     return this.service.findAll(user.tenantId);
   }
 
   @Post()
-  create(@Body() dto: CreateScheduledMessageDto, @CurrentUser() user: JwtPayload) {
+  async create(@Body() dto: CreateScheduledMessageDto, @CurrentUser() user: JwtPayload) {
+    await this.planLimits.assertScheduledMessagesEnabled(user.tenantId);
     return this.service.create(
       user.tenantId,
       dto.conversationId,
@@ -36,7 +42,8 @@ export class ScheduledMessagesController {
 
   @Delete(':id')
   @HttpCode(200)
-  cancel(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  async cancel(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    await this.planLimits.assertScheduledMessagesEnabled(user.tenantId);
     return this.service.cancel(id, user.tenantId);
   }
 }

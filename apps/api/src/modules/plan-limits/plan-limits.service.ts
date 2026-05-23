@@ -6,13 +6,44 @@ export interface PlanLimits {
   maxAgents: number;
   aiEnabled: boolean;
   campaignsEnabled: boolean;
+  agendaEnabled: boolean;
+  scheduledMessagesEnabled: boolean;
+  reportsEnabled: boolean;
 }
 
 const LIMITS: Record<Plan, PlanLimits> = {
-  [Plan.START]: { maxAgents: 3, aiEnabled: false, campaignsEnabled: false },
-  [Plan.PRO]: { maxAgents: 10, aiEnabled: true, campaignsEnabled: true },
-  [Plan.AGENDA_PRO]: { maxAgents: 5, aiEnabled: true, campaignsEnabled: false },
-  [Plan.ENTERPRISE]: { maxAgents: Infinity, aiEnabled: true, campaignsEnabled: true },
+  [Plan.START]: {
+    maxAgents: 3,
+    aiEnabled: false,
+    campaignsEnabled: false,
+    agendaEnabled: false,
+    scheduledMessagesEnabled: false,
+    reportsEnabled: false,
+  },
+  [Plan.PRO]: {
+    maxAgents: Infinity,
+    aiEnabled: true,
+    campaignsEnabled: true,
+    agendaEnabled: false,
+    scheduledMessagesEnabled: true,
+    reportsEnabled: true,
+  },
+  [Plan.AGENDA_PRO]: {
+    maxAgents: Infinity,
+    aiEnabled: true,
+    campaignsEnabled: true,
+    agendaEnabled: true,
+    scheduledMessagesEnabled: true,
+    reportsEnabled: true,
+  },
+  [Plan.ENTERPRISE]: {
+    maxAgents: Infinity,
+    aiEnabled: true,
+    campaignsEnabled: true,
+    agendaEnabled: true,
+    scheduledMessagesEnabled: true,
+    reportsEnabled: true,
+  },
 };
 
 @Injectable()
@@ -45,10 +76,9 @@ export class PlanLimitsService {
     });
     if (!tenant) return;
 
-    const limits = this.getLimits(tenant.plan);
-    if (!limits.campaignsEnabled) {
+    if (!this.getLimits(tenant.plan).campaignsEnabled) {
       throw new ForbiddenException(
-        `O teu plano ${tenant.plan} não inclui campanhas. Faz upgrade para o plano PRO ou ENTERPRISE.`,
+        `O teu plano ${tenant.plan} não inclui campanhas. Faz upgrade para o plano PRO ou superior.`,
       );
     }
   }
@@ -60,10 +90,51 @@ export class PlanLimitsService {
     });
     if (!tenant) return;
 
-    const limits = this.getLimits(tenant.plan);
-    if (!limits.aiEnabled) {
+    if (!this.getLimits(tenant.plan).aiEnabled) {
       throw new ForbiddenException(
         `O teu plano ${tenant.plan} não inclui o assistente de IA. Faz upgrade para aceder a esta funcionalidade.`,
+      );
+    }
+  }
+
+  async assertAgendaEnabled(tenantId: string): Promise<void> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true },
+    });
+    if (!tenant) return;
+
+    if (!this.getLimits(tenant.plan).agendaEnabled) {
+      throw new ForbiddenException(
+        `O teu plano ${tenant.plan} não inclui a agenda. Faz upgrade para o plano AGENDA_PRO para aceder a esta funcionalidade.`,
+      );
+    }
+  }
+
+  async assertScheduledMessagesEnabled(tenantId: string): Promise<void> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true },
+    });
+    if (!tenant) return;
+
+    if (!this.getLimits(tenant.plan).scheduledMessagesEnabled) {
+      throw new ForbiddenException(
+        `O teu plano ${tenant.plan} não inclui mensagens agendadas. Faz upgrade para o plano PRO ou superior.`,
+      );
+    }
+  }
+
+  async assertReportsEnabled(tenantId: string): Promise<void> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true },
+    });
+    if (!tenant) return;
+
+    if (!this.getLimits(tenant.plan).reportsEnabled) {
+      throw new ForbiddenException(
+        `O teu plano ${tenant.plan} não inclui relatórios avançados. Faz upgrade para o plano PRO ou superior.`,
       );
     }
   }
