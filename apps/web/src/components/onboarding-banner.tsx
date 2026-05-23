@@ -39,7 +39,7 @@ export function OnboardingBanner() {
   }
 
   return (
-    <div className="mb-5 bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
+    <div className="hidden md:block mb-5 bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden">
       {/* Header */}
       <div
         className="flex items-center justify-between px-5 py-4 cursor-pointer select-none"
