@@ -11,7 +11,7 @@ WORKDIR /app
 RUN npm install -g pnpm && apk add --no-cache openssl
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
-COPY packages/ ./packages/
+COPY --from=builder /app/packages ./packages
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
