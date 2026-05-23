@@ -106,6 +106,7 @@ export function LandingNav(): React.ReactElement {
       <a href="/#funcionalidades" className="hover:text-white transition-colors">Funcionalidades</a>
       <a href="/#precos" className="hover:text-white transition-colors">Preços</a>
       <a href="/#faq" className="hover:text-white transition-colors">FAQ</a>
+      <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
     </nav>
   );
 }
