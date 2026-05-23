@@ -105,6 +105,18 @@ const navItems: NavItem[] = [
   },
 ];
 
+const enterpriseNavItems: NavItem[] = [
+  {
+    href: '/developer',
+    label: 'Developer',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+      </svg>
+    ),
+  },
+];
+
 function LockIcon() {
   return (
     <svg className="h-3.5 w-3.5 text-gray-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -184,6 +196,26 @@ export function Sidebar(): React.ReactElement {
             );
           }
 
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-brand-600/15 text-brand-400 border border-brand-500/20'
+                  : 'text-gray-400 hover:bg-white/[0.04] hover:text-gray-200',
+              )}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          );
+        })}
+
+        {/* Developer — apenas Enterprise */}
+        {planData?.plan === 'ENTERPRISE' && enterpriseNavItems.map((item) => {
+          const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

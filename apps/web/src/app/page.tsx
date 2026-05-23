@@ -876,8 +876,9 @@ export default function LandingPage() {
               <a href="#faq" className="hover:text-gray-300 transition-colors">FAQ</a>
             </nav>
             <div className="flex gap-5 text-sm text-gray-500">
-              <a href="#" className="hover:text-gray-300 transition-colors">Privacidade</a>
-              <a href="#" className="hover:text-gray-300 transition-colors">Termos</a>
+              <a href="/privacy" className="hover:text-gray-300 transition-colors">Privacidade</a>
+              <a href="/terms" className="hover:text-gray-300 transition-colors">Termos</a>
+              <a href="/cookies" className="hover:text-gray-300 transition-colors">Cookies</a>
               <a href="mailto:suporte@wpprecebo.pt" className="hover:text-gray-300 transition-colors">Suporte</a>
             </div>
           </div>
