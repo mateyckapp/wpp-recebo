@@ -601,31 +601,31 @@ function ProfessionalsSection() {
 export default function AgendaConfigPage() {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <div className="px-8 py-6 border-b border-white/[0.06] flex items-center justify-between gap-4">
-        <div>
+      <div className="px-4 md:px-8 py-4 md:py-6 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1 min-w-0">
           <h1 className="text-xl font-semibold text-white">Configurar Agenda</h1>
           <p className="text-sm text-gray-500 mt-0.5">Define os serviços e horários disponíveis para marcação via WhatsApp</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             href="/agenda/notificacoes"
-            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+            className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
           >
             Notificações
           </Link>
           <Link
             href="/agenda"
-            className="flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
+            className="flex items-center gap-1.5 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-xs md:text-sm font-medium text-gray-200 hover:bg-white/[0.08] transition-colors"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            Voltar à agenda
+            Voltar
           </Link>
         </div>
       </div>
 
-      <div className="px-8 py-6 max-w-2xl space-y-6">
+      <div className="px-4 md:px-8 py-6 max-w-2xl space-y-6">
         <div className="rounded-xl border border-brand-500/20 bg-brand-600/5 px-4 py-3 text-sm text-brand-300">
           Após configurares os serviços e profissionais, a IA do WhatsApp irá automaticamente oferecer marcações aos clientes durante a conversa.
         </div>
