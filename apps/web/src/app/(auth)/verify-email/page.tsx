@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 
@@ -18,12 +18,20 @@ function buildDashboardUrl(tenantSlug: string): string {
 
 function VerifyEmailContent(): React.ReactElement {
   const params = useSearchParams();
+  const router = useRouter();
   const token = params.get('token') ?? '';
   const [state, setState] = useState<State>('loading');
   const [dashboardUrl, setDashboardUrl] = useState('/kanban');
   const [errorMsg, setErrorMsg] = useState('');
+  const [onSubdomain, setOnSubdomain] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const parts = window.location.hostname.split('.');
+      const isSubdomain = parts.length > 2 || (parts.length === 2 && parts[1] === 'localhost');
+      setOnSubdomain(isSubdomain);
+    }
+
     if (!token) {
       setState('error');
       setErrorMsg('Link de verificação inválido ou em falta.');
@@ -92,12 +100,18 @@ function VerifyEmailContent(): React.ReactElement {
                 <p className="font-semibold text-white">Email verificado!</p>
                 <p className="mt-1 text-sm text-gray-400">A tua conta está agora confirmada.</p>
               </div>
-              <a
-                href={dashboardUrl}
+              <button
+                onClick={() => {
+                  if (onSubdomain) {
+                    router.push('/kanban');
+                  } else {
+                    window.location.href = dashboardUrl;
+                  }
+                }}
                 className="inline-block rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition-all shadow-lg shadow-brand-600/25"
               >
                 Ir para o dashboard
-              </a>
+              </button>
             </div>
           )}
 
