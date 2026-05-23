@@ -4,6 +4,7 @@ import { SessionProvider } from '@/components/session-provider';
 import { SocketProvider } from '@/components/socket-provider';
 import { OnboardingBanner } from '@/components/onboarding-banner';
 import { WelcomeWizard } from '@/components/welcome-wizard';
+import { EmailVerificationBanner } from '@/components/email-verification-banner';
 
 export default function DashboardLayout({
   children,
@@ -29,6 +30,7 @@ export default function DashboardLayout({
           </div>
         </div>
         <div className="flex-1 overflow-hidden p-3 md:p-6 pb-16 md:pb-6 flex flex-col">
+          <EmailVerificationBanner />
           <OnboardingBanner />
           <div className="flex-1 overflow-auto flex flex-col">{children}</div>
         </div>

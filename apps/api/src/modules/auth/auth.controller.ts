@@ -138,6 +138,22 @@ export class AuthController {
     await this.authService.resetPassword(dto.token, dto.password);
   }
 
+  @Public()
+  @Get('verify-email')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Verificar email com token' })
+  async verifyEmail(@Query('token') token: string): Promise<void> {
+    await this.authService.verifyEmail(token ?? '');
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reenviar email de verificação' })
+  async resendVerification(@CurrentUser() user: JwtPayload): Promise<void> {
+    await this.authService.resendVerification(user.sub);
+  }
+
   @Get('me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obter utilizador autenticado' })

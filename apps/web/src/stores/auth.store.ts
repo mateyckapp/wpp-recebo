@@ -9,6 +9,7 @@ interface AuthUser {
   role: UserRole;
   tenantId: string;
   tenantSlug: string;
+  emailVerified?: boolean;
 }
 
 interface AuthState {

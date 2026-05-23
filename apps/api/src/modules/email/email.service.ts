@@ -47,14 +47,22 @@ export class EmailService {
     await this.send(to, 'Recuperação de password — WppRecebo', this.templatePasswordReset(name, url));
   }
 
+  // ── Email verification ────────────────────────────────────────────────────
+
+  async sendEmailVerification(to: string, name: string, token: string): Promise<void> {
+    const url = `${this.appUrl}/verify-email?token=${token}`;
+    await this.send(to, 'Verifica o teu email — WppRecebo', this.templateEmailVerification(name, url));
+  }
+
   // ── Welcome ───────────────────────────────────────────────────────────────
 
-  async sendWelcome(to: string, name: string, tenantSlug: string): Promise<void> {
-    const domain = this.config.get<string>('APP_DOMAIN') ?? 'wpprecebo.pt';
+  async sendWelcome(to: string, name: string, tenantSlug: string, verificationToken?: string): Promise<void> {
+    const domain = this.config.get<string>('APP_DOMAIN') ?? 'wpprecebo.com';
     const dashboardUrl = this.appUrl.includes('localhost')
       ? `http://${tenantSlug}.localhost:3000/kanban`
       : `https://${tenantSlug}.${domain}/kanban`;
-    await this.send(to, 'Bem-vindo ao WppRecebo! 🎉', this.templateWelcome(name, dashboardUrl));
+    const verifyUrl = verificationToken ? `${this.appUrl}/verify-email?token=${verificationToken}` : undefined;
+    await this.send(to, 'Bem-vindo ao WppRecebo! 🎉', this.templateWelcome(name, dashboardUrl, verifyUrl));
   }
 
   // ── Agent invitation ──────────────────────────────────────────────────────
@@ -117,6 +125,16 @@ export class EmailService {
     return `<p style="margin:0 0 12px;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.6;">${text}</p>`;
   }
 
+  private templateEmailVerification(name: string, url: string): string {
+    return this.wrap(`
+      ${this.h1('Verifica o teu email')}
+      ${this.p(`Olá ${name},`)}
+      ${this.p('Clica no botão abaixo para confirmar o teu endereço de email e ativar a tua conta WppRecebo.')}
+      ${this.btn(url, 'Verificar email')}
+      ${this.p('<span style="font-size:13px;color:rgba(255,255,255,0.35);">Este link expira em <strong style="color:rgba(255,255,255,0.5);">24 horas</strong>. Se não criaste esta conta, podes ignorar este email.</span>')}
+    `);
+  }
+
   private templatePasswordReset(name: string, url: string): string {
     return this.wrap(`
       ${this.h1('Recuperação de password')}
@@ -127,7 +145,7 @@ export class EmailService {
     `);
   }
 
-  private templateWelcome(name: string, dashboardUrl: string): string {
+  private templateWelcome(name: string, dashboardUrl: string, verifyUrl?: string): string {
     const firstName = name.split(' ')[0] ?? name;
     return `<!DOCTYPE html>
 <html lang="pt">
@@ -223,11 +241,28 @@ export class EmailService {
             <!-- CTA -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="padding:28px 40px 40px;">
+                <td style="padding:28px 40px ${verifyUrl ? '20px' : '40px'};">
                   <a href="${dashboardUrl}" style="display:inline-block;background:#7c3aed;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;letter-spacing:0.2px;">Ir para o dashboard →</a>
                 </td>
               </tr>
             </table>
+
+            ${verifyUrl ? `<!-- Verify email CTA -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:0 40px 40px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:16px 20px;">
+                        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#a78bfa;">Confirma o teu email</p>
+                        <p style="margin:0 0 12px;font-size:13px;color:rgba(255,255,255,0.5);line-height:1.5;">Para garantires o acesso completo à tua conta, confirma o teu endereço de email.</p>
+                        <a href="${verifyUrl}" style="display:inline-block;background:rgba(124,58,237,0.25);color:#a78bfa;text-decoration:none;font-size:13px;font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid rgba(124,58,237,0.3);">Verificar email →</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>` : ''}
 
             <!-- Separador stats -->
             <table width="100%" cellpadding="0" cellspacing="0">

@@ -82,13 +82,39 @@ export class AuthService {
     return { accessToken: await this.signAccessToken(newPayload) };
   }
 
-  async getMe(payload: JwtPayload): Promise<{ id: string; email: string; name: string; role: UserRole; tenantId: string; tenantSlug: string }> {
+  async getMe(payload: JwtPayload): Promise<{ id: string; email: string; name: string; role: UserRole; tenantId: string; tenantSlug: string; emailVerified: boolean }> {
     const [user, tenant] = await Promise.all([
       this.usersService.findById(payload.sub),
       this.prisma.tenant.findUnique({ where: { id: payload.tenantId }, select: { slug: true } }),
     ]);
     if (!user || !tenant) throw new UnauthorizedException('Utilizador não encontrado');
-    return { id: user.id, email: user.email, name: user.name, role: user.role as UserRole, tenantId: user.tenantId, tenantSlug: tenant.slug };
+    return { id: user.id, email: user.email, name: user.name, role: user.role as UserRole, tenantId: user.tenantId, tenantSlug: tenant.slug, emailVerified: user.emailVerified };
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    let payload: { sub: string; purpose: string };
+    try {
+      payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('app.jwt.secret'),
+      });
+    } catch {
+      throw new UnauthorizedException('Link de verificação inválido ou expirado');
+    }
+    if (payload.purpose !== 'email-verification') {
+      throw new UnauthorizedException('Token inválido');
+    }
+    await this.prisma.user.update({ where: { id: payload.sub }, data: { emailVerified: true } });
+  }
+
+  async resendVerification(userId: string): Promise<void> {
+    const user = await this.usersService.findByIdOrThrow(userId);
+    if (user.emailVerified) return;
+
+    const token = await this.jwtService.signAsync(
+      { sub: user.id, email: user.email, purpose: 'email-verification' },
+      { secret: this.configService.get<string>('app.jwt.secret'), expiresIn: '24h' },
+    );
+    void this.email.sendEmailVerification(user.email, user.name, token);
   }
 
   async issueRefreshToken(user: JwtPayload): Promise<string> {
@@ -157,7 +183,11 @@ export class AuthService {
       this.signRefreshToken(payload),
     ]);
 
-    void this.email.sendWelcome(user.email, user.name, tenant.slug);
+    const verificationToken = await this.jwtService.signAsync(
+      { sub: user.id, email: user.email, purpose: 'email-verification' },
+      { secret: this.configService.get<string>('app.jwt.secret'), expiresIn: '24h' },
+    );
+    void this.email.sendWelcome(user.email, user.name, tenant.slug, verificationToken);
     void this.cloudflare.createSubdomain(tenant.slug);
 
     return {

@@ -13,6 +13,7 @@ interface MeResponse {
   role: UserRole;
   tenantId: string;
   tenantSlug: string;
+  emailVerified: boolean;
 }
 
 export function SessionProvider(): null {
