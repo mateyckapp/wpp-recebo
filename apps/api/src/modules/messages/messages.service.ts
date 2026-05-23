@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../../prisma/prisma.service';
 import { WhatsappService } from '../whatsapp/whatsapp.service';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
+import { OutboundWebhooksService } from '../outbound-webhooks/outbound-webhooks.service';
 import { MessageDirection, MessageStatus, MessageType } from '@prisma/client';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class MessagesService {
     private readonly prisma: PrismaService,
     private readonly whatsapp: WhatsappService,
     private readonly ws: WebsocketGateway,
+    private readonly outboundWebhooks: OutboundWebhooksService,
   ) {}
 
   async getMessages(conversationId: string, tenantId: string, cursor?: string, limit = 30) {
@@ -111,6 +113,16 @@ export class MessagesService {
       conversationId,
       unreadCount: 0,
       lastMessageAt: new Date(),
+    });
+
+    void this.outboundWebhooks.dispatch({
+      event: 'message.sent',
+      tenantId,
+      data: {
+        message: { id: message.id, content: text, type: 'text', direction: 'outbound', status: 'sent', sentAt: message.createdAt },
+        conversation: { id: conversationId },
+        sender: { type: 'agent', id: userId, name: message.sentByUser?.name ?? null },
+      },
     });
 
     return message;

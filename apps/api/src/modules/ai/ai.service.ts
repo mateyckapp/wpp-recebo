@@ -99,13 +99,127 @@ export class AiService {
 
   async upsertConfig(
     tenantId: string,
-    data: { isEnabled?: boolean; businessContext?: string; fallbackToHuman?: boolean },
+    data: Record<string, unknown>,
   ) {
     const existing = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
     if (existing) {
       return this.prisma.aIConfig.update({ where: { id: existing.id }, data });
     }
     return this.prisma.aIConfig.create({ data: { tenantId, ...data } });
+  }
+
+  async getContext(tenantId: string) {
+    const config = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
+    return {
+      data: {
+        businessName: config?.businessName ?? null,
+        description: config?.businessDescription ?? null,
+        address: config?.businessAddress ?? null,
+        services: (config?.servicesContext as unknown[] | null) ?? [],
+        workingHours: (config?.workingHours as Record<string, string> | null) ?? {},
+        faqs: (config?.faqsContext as Array<Record<string, string>> | null) ?? [],
+        updatedAt: config?.updatedAt ?? null,
+      },
+    };
+  }
+
+  async updateContext(tenantId: string, dto: {
+    businessName?: string;
+    businessDescription?: string;
+    businessAddress?: string;
+    servicesContext?: unknown[];
+    workingHours?: Record<string, string>;
+  }) {
+    return this.upsertConfig(tenantId, {
+      businessName: dto.businessName,
+      businessDescription: dto.businessDescription,
+      businessAddress: dto.businessAddress,
+      servicesContext: dto.servicesContext,
+      workingHours: dto.workingHours,
+      aiStatus: 'training',
+    });
+  }
+
+  async addFaq(tenantId: string, faq: { question: string; answer: string }) {
+    const config = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
+    const existing = (config?.faqsContext as Array<Record<string, string>> | null) ?? [];
+    const newFaq = { id: `faq_${Date.now()}`, ...faq };
+    const updated = [...existing, newFaq];
+
+    await this.upsertConfig(tenantId, { faqsContext: updated, aiStatus: 'training' });
+    return { data: newFaq };
+  }
+
+  async removeFaq(tenantId: string, faqId: string) {
+    const config = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
+    const existing = (config?.faqsContext as Array<Record<string, string>> | null) ?? [];
+    const updated = existing.filter((f) => f['id'] !== faqId);
+
+    await this.upsertConfig(tenantId, { faqsContext: updated, aiStatus: 'training' });
+    return { message: 'FAQ removida com sucesso' };
+  }
+
+  async getBehavior(tenantId: string) {
+    const config = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
+    return {
+      data: {
+        persona: {
+          name: config?.personaName ?? null,
+          tone: config?.personaTone ?? 'friendly',
+          useEmojis: config?.personaUseEmojis ?? true,
+          maxMessageLength: config?.maxResponseTokens ?? 300,
+        },
+        greeting: config?.greeting ?? null,
+        fallbackMessage: config?.fallbackMessage ?? null,
+        outOfScopeMessage: config?.outOfScopeMessage ?? null,
+        escalation: {
+          enabled: config?.escalationEnabled ?? true,
+          keywords: config?.escalationKeywords ?? [],
+          escalationMessage: config?.escalationMessage ?? null,
+          assignToQueue: true,
+        },
+        restrictions: (config?.restrictions as Record<string, boolean> | null) ?? {},
+        updatedAt: config?.updatedAt ?? null,
+      },
+    };
+  }
+
+  async updateBehavior(tenantId: string, dto: Record<string, unknown>) {
+    return this.upsertConfig(tenantId, dto);
+  }
+
+  async testReply(tenantId: string, message: string) {
+    const aiConfig = await this.prisma.aIConfig.findUnique({ where: { tenantId } });
+    const hasAgenda = await this.agendaService.hasAgenda(tenantId);
+    const systemPrompt = this.buildSystemPrompt(aiConfig?.businessContext, hasAgenda);
+
+    const start = Date.now();
+
+    try {
+      const response = await this.client.messages.create({
+        model: HAIKU_MODEL,
+        max_tokens: aiConfig?.maxResponseTokens ?? 300,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: message }],
+      });
+
+      const text = response.content
+        .filter((b) => b.type === 'text')
+        .map((b) => (b as { type: 'text'; text: string }).text)
+        .join('');
+
+      return {
+        data: {
+          response: text,
+          escalated: false,
+          tokensUsed: response.usage.input_tokens + response.usage.output_tokens,
+          processingMs: Date.now() - start,
+        },
+      };
+    } catch (err) {
+      this.logger.error(`Erro no teste da IA: ${String(err)}`);
+      throw err;
+    }
   }
 
   async generateReply(

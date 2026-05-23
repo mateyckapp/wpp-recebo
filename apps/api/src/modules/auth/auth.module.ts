@@ -6,10 +6,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { CloudflareModule } from '../cloudflare/cloudflare.module';
+import { ApiKeyOrJwtGuard } from '../../common/guards/api-key-or-jwt.guard';
 
 @Module({
   imports: [
@@ -24,11 +24,11 @@ import { CloudflareModule } from '../cloudflare/cloudflare.module';
     AuthService,
     JwtStrategy,
     JwtRefreshStrategy,
-    // Guard global — todas as rotas protegidas por defeito
+    // Guard global — todas as rotas protegidas por defeito (JWT ou API Key)
     // Usar @Public() para rotas públicas
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: ApiKeyOrJwtGuard,
     },
   ],
   exports: [AuthService],

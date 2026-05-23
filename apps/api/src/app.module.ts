@@ -24,6 +24,8 @@ import { EmailModule } from './modules/email/email.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { OutboundWebhooksModule } from './modules/outbound-webhooks/outbound-webhooks.module';
+import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { appConfig } from './config/app.config';
 
@@ -63,6 +65,8 @@ import { appConfig } from './config/app.config';
     WebsocketModule,
     PlanLimitsModule,
     AnalyticsModule,
+    OutboundWebhooksModule,
+    ApiKeysModule,
   ],
   providers: [
     {

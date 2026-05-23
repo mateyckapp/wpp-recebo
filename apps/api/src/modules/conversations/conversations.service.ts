@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { OutboundWebhooksService } from '../outbound-webhooks/outbound-webhooks.service';
 
 @Injectable()
 export class ConversationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly outboundWebhooks: OutboundWebhooksService,
+  ) {}
 
   async findAll(
     tenantId: string,
@@ -86,10 +90,20 @@ export class ConversationsService {
   }
 
   async updateStatus(id: string, tenantId: string, status: string) {
-    return this.prisma.conversation.update({
+    const updated = await this.prisma.conversation.update({
       where: { id, tenantId },
       data: { status: status as 'OPEN' | 'CLOSED' | 'ARCHIVED' },
       select: { id: true, status: true },
     });
+
+    if (status === 'CLOSED') {
+      void this.outboundWebhooks.dispatch({
+        event: 'conversation.resolved',
+        tenantId,
+        data: { conversation: { id, resolvedAt: new Date() } },
+      });
+    }
+
+    return updated;
   }
 }

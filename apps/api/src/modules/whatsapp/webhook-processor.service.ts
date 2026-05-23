@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { WhatsappService } from './whatsapp.service';
 import { AiService } from '../ai/ai.service';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
+import { OutboundWebhooksService } from '../outbound-webhooks/outbound-webhooks.service';
 import type {
   WhatsappWebhookPayload,
   WhatsappMessage,
@@ -20,6 +21,7 @@ export class WebhookProcessorService {
     private readonly whatsapp: WhatsappService,
     private readonly ai: AiService,
     private readonly ws: WebsocketGateway,
+    private readonly outboundWebhooks: OutboundWebhooksService,
   ) {}
 
   async process(payload: WhatsappWebhookPayload): Promise<void> {
@@ -103,6 +105,8 @@ export class WebhookProcessorService {
         orderBy: { createdAt: 'desc' },
       });
 
+      const isNewConversation = !conversation;
+
       if (!conversation) {
         conversation = await this.prisma.conversation.create({
           data: {
@@ -160,6 +164,28 @@ export class WebhookProcessorService {
         unreadCount: updatedConv.unreadCount,
         lastMessageAt: updatedConv.lastMessageAt,
       });
+
+      // Dispatch outbound webhooks (fire-and-forget)
+      void this.outboundWebhooks.dispatch({
+        event: 'message.received',
+        tenantId,
+        data: {
+          message: { id: savedMessage.id, content, type, direction: 'inbound', sentAt: savedMessage.createdAt },
+          conversation: { id: conversation.id, status: 'open' },
+          contact: { id: contact.id, name: contact.name, phone: contact.phoneNumber },
+        },
+      });
+
+      if (isNewConversation) {
+        void this.outboundWebhooks.dispatch({
+          event: 'conversation.created',
+          tenantId,
+          data: {
+            conversation: { id: conversation.id, status: 'open', createdAt: conversation.createdAt },
+            contact: { id: contact.id, name: contact.name, phone: contact.phoneNumber },
+          },
+        });
+      }
 
       // 5. Marcar como lida no WhatsApp
       await this.whatsapp.markAsRead(phoneNumberId, message.id, accessToken);

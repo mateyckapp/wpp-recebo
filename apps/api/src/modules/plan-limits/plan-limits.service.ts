@@ -138,4 +138,18 @@ export class PlanLimitsService {
       );
     }
   }
+
+  async assertEnterpriseApiAccess(tenantId: string): Promise<void> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true },
+    });
+    if (!tenant) return;
+
+    if (tenant.plan !== Plan.ENTERPRISE) {
+      throw new ForbiddenException(
+        'O acesso à API pública e webhooks requer o plano Enterprise.',
+      );
+    }
+  }
 }

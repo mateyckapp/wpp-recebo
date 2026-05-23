@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppointmentStatus } from '@prisma/client';
 import { AgendaNotificationsService } from '../agenda-notifications/agenda-notifications.service';
+import { OutboundWebhooksService } from '../outbound-webhooks/outbound-webhooks.service';
 
 export interface AvailableSlot {
   time: string; // "10:00"
@@ -15,6 +16,7 @@ export class AgendaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: AgendaNotificationsService,
+    private readonly outboundWebhooks: OutboundWebhooksService,
   ) {}
 
   // ── Services ──────────────────────────────────────────────────────────────
@@ -233,6 +235,22 @@ export class AgendaService {
       professional: appointment.professional,
     });
 
+    void this.outboundWebhooks.dispatch({
+      event: 'appointment.created',
+      tenantId: data.tenantId,
+      data: {
+        appointment: {
+          id: appointment.id,
+          service: { id: appointment.service.id, name: appointment.service.name, duration: appointment.service.duration },
+          professional: { id: appointment.professional.id, name: appointment.professional.name },
+          scheduledFor: appointment.scheduledAt,
+          status: appointment.status,
+          createdAt: appointment.createdAt,
+        },
+        contact: { id: appointment.contact.id, name: appointment.contact.name, phone: appointment.contact.phoneNumber },
+      },
+    });
+
     return appointment;
   }
 
@@ -273,11 +291,24 @@ export class AgendaService {
     if (status === AppointmentStatus.CANCELLED) {
       void this.notifications.cancelForAppointment(id);
     }
-    return this.prisma.appointment.update({
+    const updated = await this.prisma.appointment.update({
       where: { id, tenantId },
       data: { status },
       include: { service: true, professional: true, contact: true },
     });
+
+    if (status === AppointmentStatus.CANCELLED) {
+      void this.outboundWebhooks.dispatch({
+        event: 'appointment.cancelled',
+        tenantId,
+        data: {
+          appointment: { id: updated.id, scheduledFor: updated.scheduledAt, cancelledAt: new Date() },
+          contact: { id: updated.contact.id, name: updated.contact.name, phone: updated.contact.phoneNumber },
+        },
+      });
+    }
+
+    return updated;
   }
 
   async hasAgenda(tenantId: string): Promise<boolean> {

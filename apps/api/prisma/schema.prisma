@@ -135,6 +135,8 @@ model Tenant {
   appointments          Appointment[]
   notificationConfig    AppointmentNotificationConfig?
   notificationJobs      AppointmentNotificationJob[]
+  apiKeys               ApiKey[]
+  webhooks              Webhook[]
 
   @@map("tenants")
 }
@@ -396,6 +398,32 @@ model AIConfig {
   knowledgeEmbeddings     Json?
   fallbackToHuman         Boolean  @default(true)
   notifyOwnerOnFail       Boolean  @default(true)
+
+  // Persona & behavior
+  personaName             String?
+  personaTone             String?
+  personaUseEmojis        Boolean  @default(true)
+  maxResponseTokens       Int      @default(300)
+  greeting                String?
+  fallbackMessage         String?
+  outOfScopeMessage       String?
+  escalationEnabled       Boolean  @default(true)
+  escalationKeywords      String[] @default([])
+  escalationMessage       String?
+  restrictions            Json?
+
+  // Structured context (GET/PUT /ai/context)
+  businessName            String?
+  businessDescription     String?
+  businessAddress         String?
+  servicesContext         Json?
+  faqsContext             Json?
+
+  // Operational
+  respondOutsideHours     Boolean  @default(false)
+  respondWhenBusy         Boolean  @default(false)
+  aiStatus                String   @default("active")
+
   updatedAt               DateTime @updatedAt
 
   @@map("ai_configs")
@@ -514,6 +542,61 @@ model TimeBlock {
   @@index([professionalId])
   @@index([professionalId, date])
   @@map("time_blocks")
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  keyHash     String    @unique
+  prefix      String
+  preview     String
+  environment String    @default("live")
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@map("api_keys")
+}
+
+model Webhook {
+  id              String    @id @default(cuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  url             String
+  events          String[]
+  secret          String?
+  description     String?
+  active          Boolean   @default(true)
+  lastDeliveredAt DateTime?
+  failureCount    Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  deliveries WebhookDelivery[]
+
+  @@index([tenantId])
+  @@map("webhooks")
+}
+
+model WebhookDelivery {
+  id          String   @id @default(cuid())
+  webhookId   String
+  webhook     Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  eventType   String
+  eventId     String   @unique
+  payload     Json
+  statusCode  Int?
+  attempts    Int      @default(0)
+  succeeded   Boolean  @default(false)
+  nextRetryAt DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([webhookId])
+  @@index([succeeded, nextRetryAt])
+  @@map("webhook_deliveries")
 }
 
 model AdminConfig {
