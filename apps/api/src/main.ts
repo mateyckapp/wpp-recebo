@@ -23,12 +23,19 @@ async function bootstrap(): Promise<void> {
     ? corsOriginEnv.split(',').map((o) => o.trim())
     : [];
 
+  const appDomain = configService.get<string>('APP_DOMAIN', 'wpprecebo.pt');
+  const appDomainRegex = new RegExp(
+    `^https?://([a-z0-9-]+\\.)?${appDomain.replace('.', '\\.')}(:\\d+)?$`,
+  );
+
   app.enableCors({
     origin: (origin, callback) => {
       // Sem origin (ex: curl, Postman, SSR) → permitir
       if (!origin) return callback(null, true);
       // Lista explícita do env
       if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Qualquer subdomínio do domínio principal da app
+      if (appDomainRegex.test(origin)) return callback(null, true);
       // Em dev: qualquer subdomínio de localhost
       if (nodeEnv !== 'production' && /^https?:\/\/([a-z0-9-]+\.)?localhost(:\d+)?$/.test(origin)) {
         return callback(null, true);
