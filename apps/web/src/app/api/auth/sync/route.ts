@@ -44,12 +44,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     console.log('[auth/sync] refreshToken obtido, a redirecionar para hydrate:', hydrateUrl);
 
     const response = NextResponse.redirect(hydrateUrl);
+    const cookieDomain = process.env['APP_COOKIE_DOMAIN'] ?? undefined;
     response.cookies.set('refresh_token', refreshToken, {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
       maxAge: 30 * 24 * 60 * 60,
       secure: process.env['NODE_ENV'] === 'production',
+      ...(cookieDomain ? { domain: cookieDomain } : {}),
     });
 
     return response;

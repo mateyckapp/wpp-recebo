@@ -19,16 +19,38 @@ export default function LoginPage(): React.ReactElement {
   const router = useRouter();
   const { login, isLoading } = useAuthStore();
 
-  // Bloqueia acesso à página de login em subdomínios (ex: demo.localhost)
-  // O login só existe no domínio raiz (localhost ou wpprecebo.pt)
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Bloqueia acesso em subdomínios — redireciona para raiz
     const parts = window.location.hostname.split('.');
     if (parts.length > 2) {
       const root = parts.slice(1).join('.');
       const port = window.location.port ? `:${window.location.port}` : '';
       window.location.replace(`${window.location.protocol}//${root}${port}/login`);
+      return;
     }
+
+    // Se já tem sessão activa, redireciona para o painel sem precisar de login
+    const sessionCookie = document.cookie.split('; ').find((c) => c.startsWith('wpp_session='));
+    if (!sessionCookie) return;
+
+    let slug = '';
+    try {
+      const raw = sessionCookie.split('=').slice(1).join('=');
+      slug = (JSON.parse(decodeURIComponent(raw)) as { slug?: string }).slug ?? '';
+    } catch { return; }
+    if (!slug) return;
+
+    fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) return;
+        const { accessToken } = (await res.json()) as { accessToken: string };
+        const { protocol, hostname, port } = window.location;
+        const portSuffix = port ? `:${port}` : '';
+        window.location.href = `${protocol}//${slug}.${hostname}${portSuffix}/api/auth/sync?at=${encodeURIComponent(accessToken)}&next=/kanban`;
+      })
+      .catch(() => { /* sem sessão válida — mostra formulário */ });
   }, []);
 
   const {
