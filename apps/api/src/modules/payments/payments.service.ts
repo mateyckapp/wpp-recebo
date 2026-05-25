@@ -39,7 +39,7 @@ export class PaymentsService {
       amount: dto.amount,
       currency: 'eur',
       description: dto.description,
-      payment_method_types: ['card', 'mbway'],
+      automatic_payment_methods: { enabled: true },
       metadata: { tenantId, token },
     });
 
