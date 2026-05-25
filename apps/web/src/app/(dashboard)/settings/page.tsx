@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchTemplates,
@@ -24,7 +24,14 @@ import {
 } from '@/lib/settings';
 import { updateProfile } from '@/lib/users';
 import { fetchBranding, updateBranding } from '@/lib/branding';
+import {
+  fetchStripeConnectStatus,
+  createStripeConnectOnboardLink,
+  disconnectStripeConnect,
+  type StripeConnectStatus,
+} from '@/lib/billing';
 import { useAuthStore } from '@/stores/auth.store';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 const inputCls =
@@ -936,6 +943,143 @@ function AiSettingsSection(): React.ReactElement {
   );
 }
 
+function StripeConnectSection(): React.ReactElement {
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const connectResult = searchParams.get('stripe_connect');
+
+  const { data: status, isLoading } = useQuery<StripeConnectStatus>({
+    queryKey: ['stripe-connect-status'],
+    queryFn: fetchStripeConnectStatus,
+    refetchOnWindowFocus: true,
+  });
+
+  const [connecting, setConnecting] = useState(false);
+  const [error, setError] = useState('');
+
+  const disconnectMutation = useMutation({
+    mutationFn: disconnectStripeConnect,
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['stripe-connect-status'] }),
+    onError: () => setError('Erro ao desligar conta Stripe'),
+  });
+
+  const handleConnect = async () => {
+    setConnecting(true);
+    setError('');
+    try {
+      const { url } = await createStripeConnectOnboardLink();
+      window.location.href = url;
+    } catch {
+      setError('Erro ao iniciar ligação Stripe');
+      setConnecting(false);
+    }
+  };
+
+  const isFullyOnboarded = status?.connected && status?.onboarded;
+  const isPartiallyConnected = status?.connected && !status?.onboarded;
+
+  return (
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.04] p-6 space-y-5">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="font-semibold text-gray-100">Receber Pagamentos</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Liga a tua conta Stripe para receber pagamentos directamente dos teus clientes
+          </p>
+        </div>
+        <div>
+          {isLoading ? null : isFullyOnboarded ? (
+            <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Conta ligada
+            </span>
+          ) : isPartiallyConnected ? (
+            <span className="flex items-center gap-1.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              A aguardar verificação
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500 bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-600" />
+              Não configurado
+            </span>
+          )}
+        </div>
+      </div>
+
+      {connectResult === 'success' && (
+        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <span>✓</span>
+          <span>Conta Stripe ligada com sucesso! Podes agora criar pedidos de pagamento.</span>
+        </div>
+      )}
+
+      {connectResult === 'refresh' && (
+        <div className="flex items-center gap-2 text-sm px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+          <span>⚠</span>
+          <span>O link de configuração expirou. Clica em "Continuar configuração" para gerar um novo.</span>
+        </div>
+      )}
+
+      {error && (
+        <p className="text-xs text-red-400">{error}</p>
+      )}
+
+      {!isLoading && (
+        <div className="space-y-3">
+          {isFullyOnboarded && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
+                <span className="text-xs text-gray-500">ID da conta</span>
+                <span className="text-xs text-gray-300 font-mono">{status.accountId}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-xs text-gray-500">Pagamentos activos</span>
+                <span className="text-xs text-emerald-400">Sim</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-2 pt-1">
+            {!isFullyOnboarded && (
+              <button
+                onClick={handleConnect}
+                disabled={connecting}
+                className="text-sm px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-500 disabled:opacity-50 transition-colors"
+              >
+                {connecting
+                  ? 'A redirecionar...'
+                  : isPartiallyConnected
+                  ? 'Continuar configuração'
+                  : 'Ligar conta Stripe'}
+              </button>
+            )}
+            {status?.connected && (
+              <button
+                onClick={() => {
+                  if (confirm('Tens a certeza que queres desligar a conta Stripe? Os pedidos de pagamento existentes não serão afectados.')) {
+                    disconnectMutation.mutate();
+                  }
+                }}
+                disabled={disconnectMutation.isPending}
+                className="text-sm px-4 py-2 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500/10 disabled:opacity-50 transition-colors"
+              >
+                {disconnectMutation.isPending ? 'A desligar...' : 'Desligar conta'}
+              </button>
+            )}
+          </div>
+
+          {!status?.connected && (
+            <p className="text-xs text-gray-600">
+              Serás redirectionado para o Stripe para criar ou ligar a tua conta. O processo demora menos de 5 minutos.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SettingsPage(): React.ReactElement {
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
@@ -976,6 +1120,9 @@ export default function SettingsPage(): React.ReactElement {
       <div className="max-w-2xl mx-auto space-y-6">
         <ProfileSection />
         <BrandingSection />
+        <Suspense>
+          <StripeConnectSection />
+        </Suspense>
         <WhatsappSettingsSection />
         <TeamSection />
         <AiSettingsSection />

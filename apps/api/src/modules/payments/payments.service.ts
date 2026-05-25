@@ -35,12 +35,26 @@ export class PaymentsService {
 
     if (!this.stripe) throw new BadRequestException('Pagamentos não configurados no servidor');
 
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { stripeConnectAccountId: true, stripeConnectOnboarded: true },
+    });
+
+    if (!tenant?.stripeConnectAccountId || !tenant.stripeConnectOnboarded) {
+      throw new BadRequestException('Liga a tua conta Stripe em Definições → Receber Pagamentos antes de criar pedidos de pagamento');
+    }
+
+    const platformFeePercent = this.config.get<number>('STRIPE_PLATFORM_FEE_PERCENT', 0);
+    const platformFee = platformFeePercent > 0 ? Math.round(dto.amount * (platformFeePercent / 100)) : undefined;
+
     const intent = await this.stripe.paymentIntents.create({
       amount: dto.amount,
       currency: 'eur',
       description: dto.description,
       automatic_payment_methods: { enabled: true },
       metadata: { tenantId, token },
+      transfer_data: { destination: tenant.stripeConnectAccountId },
+      ...(platformFee ? { application_fee_amount: platformFee } : {}),
     });
 
     const payment = await this.prisma.payment.create({

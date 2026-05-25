@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Headers, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Headers, Req } from '@nestjs/common';
 import { RawBodyRequest } from '@nestjs/common';
 import { Request } from 'express';
 import { BillingService } from './billing.service';
@@ -51,6 +51,22 @@ export class BillingController {
   createPortal(@CurrentUser() user: JwtPayload, @Req() req: Request) {
     const appUrl = req.headers['x-app-url'] as string | undefined ?? 'http://localhost:3000';
     return this.billing.createPortalSession(user.tenantId, appUrl);
+  }
+
+  @Get('stripe-connect/status')
+  getConnectStatus(@CurrentUser() user: JwtPayload) {
+    return this.billing.getStripeConnectStatus(user.tenantId);
+  }
+
+  @Post('stripe-connect/onboard')
+  createConnectOnboard(@CurrentUser() user: JwtPayload, @Req() req: Request) {
+    const appUrl = req.headers['x-app-url'] as string | undefined ?? 'http://localhost:3000';
+    return this.billing.createStripeConnectLink(user.tenantId, appUrl);
+  }
+
+  @Delete('stripe-connect')
+  disconnectConnect(@CurrentUser() user: JwtPayload) {
+    return this.billing.disconnectStripeConnect(user.tenantId);
   }
 
   @Public()

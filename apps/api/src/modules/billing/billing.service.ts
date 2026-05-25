@@ -121,6 +121,77 @@ export class BillingService {
     return { url: session.url };
   }
 
+  async createStripeConnectLink(tenantId: string, returnBaseUrl: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { stripeConnectAccountId: true },
+    });
+    if (!tenant) throw new NotFoundException('Tenant não encontrado');
+
+    let accountId = tenant.stripeConnectAccountId;
+
+    if (!accountId) {
+      const account = await this.stripe.accounts.create({
+        type: 'express',
+        metadata: { tenantId },
+      });
+      accountId = account.id;
+      await this.prisma.tenant.update({
+        where: { id: tenantId },
+        data: { stripeConnectAccountId: accountId },
+      });
+    }
+
+    const link = await this.stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${returnBaseUrl}/settings?stripe_connect=refresh`,
+      return_url: `${returnBaseUrl}/settings?stripe_connect=success`,
+      type: 'account_onboarding',
+    });
+
+    return { url: link.url };
+  }
+
+  async getStripeConnectStatus(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { stripeConnectAccountId: true, stripeConnectOnboarded: true },
+    });
+    if (!tenant) throw new NotFoundException('Tenant não encontrado');
+
+    if (!tenant.stripeConnectAccountId) return { connected: false, onboarded: false };
+
+    try {
+      const account = await this.stripe.accounts.retrieve(tenant.stripeConnectAccountId);
+      const onboarded = !!(account.charges_enabled && account.details_submitted);
+
+      if (onboarded !== tenant.stripeConnectOnboarded) {
+        await this.prisma.tenant.update({
+          where: { id: tenantId },
+          data: { stripeConnectOnboarded: onboarded },
+        });
+      }
+
+      return {
+        connected: true,
+        onboarded,
+        accountId: tenant.stripeConnectAccountId,
+        chargesEnabled: account.charges_enabled,
+        detailsSubmitted: account.details_submitted,
+      };
+    } catch {
+      return { connected: false, onboarded: false };
+    }
+  }
+
+  async disconnectStripeConnect(tenantId: string) {
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { stripeConnectAccountId: null, stripeConnectOnboarded: false },
+    });
+    return { success: true };
+  }
+
   async handleWebhook(rawBody: Buffer, signature: string) {
     let event: Awaited<ReturnType<typeof this.stripe.webhooks.constructEvent>>;
 
