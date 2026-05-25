@@ -144,8 +144,8 @@ export class BillingService {
 
     const link = await this.stripe.accountLinks.create({
       account: accountId,
-      refresh_url: `${returnBaseUrl}/invoices?stripe_connect=refresh`,
-      return_url: `${returnBaseUrl}/invoices?stripe_connect=success`,
+      refresh_url: `${returnBaseUrl}/pagamentos?stripe_connect=refresh`,
+      return_url: `${returnBaseUrl}/pagamentos?stripe_connect=success`,
       type: 'account_onboarding',
     });
 

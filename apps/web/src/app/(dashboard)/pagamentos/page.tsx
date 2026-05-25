@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import {
+  fetchStripeConnectStatus,
+  createStripeConnectOnboardLink,
+  disconnectStripeConnect,
+  type StripeConnectStatus,
+} from '@/lib/billing';
 
 interface Payment {
   id: string;
@@ -42,6 +49,83 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 
 const inputCls = 'w-full text-sm border border-white/[0.1] bg-white/[0.06] text-gray-100 placeholder-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500/40 transition';
 
+function StripeConnectBanner(): React.ReactElement | null {
+  const qc = useQueryClient();
+  const searchParams = useSearchParams();
+  const connectResult = searchParams.get('stripe_connect');
+  const [connecting, setConnecting] = useState(false);
+  const [error, setError] = useState('');
+
+  const { data: status } = useQuery<StripeConnectStatus>({
+    queryKey: ['stripe-connect-status'],
+    queryFn: fetchStripeConnectStatus,
+    refetchOnWindowFocus: true,
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: disconnectStripeConnect,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['stripe-connect-status'] }),
+  });
+
+  const handleConnect = async () => {
+    setConnecting(true);
+    setError('');
+    try {
+      const { url } = await createStripeConnectOnboardLink();
+      window.location.href = url;
+    } catch {
+      setError('Erro ao iniciar ligação Stripe.');
+      setConnecting(false);
+    }
+  };
+
+  if (status?.connected && status?.onboarded) {
+    return (
+      <div className="flex items-center justify-between px-3 py-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 text-xs">
+        <span className="flex items-center gap-1.5 text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          Conta Stripe ligada — os pagamentos vão directamente para a tua conta
+        </span>
+        <button
+          onClick={() => { if (confirm('Desligar conta Stripe?')) disconnectMutation.mutate(); }}
+          className="text-gray-600 hover:text-red-400 transition-colors"
+        >
+          Desligar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4 space-y-2">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-amber-300">Liga a tua conta Stripe para receber pagamentos</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {status?.connected
+              ? 'O registo ficou incompleto. Continua a configuração para activar os pagamentos.'
+              : 'Cria ou liga a tua conta Stripe Express. O processo demora menos de 5 minutos.'}
+          </p>
+        </div>
+        <button
+          onClick={handleConnect}
+          disabled={connecting}
+          className="flex-shrink-0 text-sm px-3.5 py-1.5 bg-brand-600 text-white rounded-lg hover:bg-brand-500 disabled:opacity-50 transition-colors"
+        >
+          {connecting ? 'A redirecionar…' : status?.connected ? 'Continuar configuração' : 'Ligar conta Stripe'}
+        </button>
+      </div>
+      {connectResult === 'success' && (
+        <p className="text-xs text-emerald-400">Conta ligada! Já podes criar cobranças.</p>
+      )}
+      {connectResult === 'refresh' && (
+        <p className="text-xs text-amber-400">O link expirou. Clica em "Continuar configuração".</p>
+      )}
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
 function UpgradeGate() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 py-20 text-center px-6">
@@ -61,7 +145,7 @@ function UpgradeGate() {
   );
 }
 
-export default function PagamentosPage() {
+function PagamentosContent() {
   const qc = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [copiedId, setCopiedId] = useState('');
@@ -107,6 +191,7 @@ export default function PagamentosPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
+      <Suspense><StripeConnectBanner /></Suspense>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Cobranças</h1>
@@ -236,5 +321,13 @@ export default function PagamentosPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PagamentosPage() {
+  return (
+    <Suspense>
+      <PagamentosContent />
+    </Suspense>
   );
 }

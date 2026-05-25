@@ -1,14 +1,10 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import {
-  fetchBilling, createCheckoutSession, createPortalSession,
-  fetchStripeConnectStatus, createStripeConnectOnboardLink, disconnectStripeConnect,
-} from '@/lib/billing';
-import type { PlanName, StripeConnectStatus } from '@/lib/billing';
+import { fetchBilling, createCheckoutSession, createPortalSession } from '@/lib/billing';
+import type { PlanName } from '@/lib/billing';
 
 const PLANS: Array<{
   key: PlanName;
@@ -91,114 +87,10 @@ function CheckIcon() {
   );
 }
 
-function StripeConnectCard({ connectResult }: { connectResult: string | null }): React.ReactElement {
-  const queryClient = useQueryClient();
-  const [connecting, setConnecting] = useState(false);
-  const [error, setError] = useState('');
-
-  const { data: status } = useQuery<StripeConnectStatus>({
-    queryKey: ['stripe-connect-status'],
-    queryFn: fetchStripeConnectStatus,
-    refetchOnWindowFocus: true,
-  });
-
-  const disconnectMutation = useMutation({
-    mutationFn: disconnectStripeConnect,
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['stripe-connect-status'] }),
-  });
-
-  const handleConnect = async () => {
-    setConnecting(true);
-    setError('');
-    try {
-      const { url } = await createStripeConnectOnboardLink();
-      window.location.href = url;
-    } catch {
-      setError('Erro ao iniciar ligação Stripe. Verifica se o Stripe Connect está activado na tua conta.');
-      setConnecting(false);
-    }
-  };
-
-  const isOnboarded = status?.connected && status?.onboarded;
-  const isPending = status?.connected && !status?.onboarded;
-
-  return (
-    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-white">Receber Pagamentos via WhatsApp</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Liga a tua conta Stripe para receber pagamentos directamente dos clientes</p>
-        </div>
-        {isOnboarded ? (
-          <span className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            Ligado
-          </span>
-        ) : isPending ? (
-          <span className="flex items-center gap-1.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            A aguardar
-          </span>
-        ) : (
-          <span className="flex items-center gap-1.5 text-xs text-gray-500 bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-600" />
-            Não ligado
-          </span>
-        )}
-      </div>
-
-      {connectResult === 'success' && (
-        <div className="rounded-lg border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-400">
-          Conta Stripe ligada com sucesso! Podes agora criar pedidos de pagamento no WhatsApp.
-        </div>
-      )}
-      {connectResult === 'refresh' && (
-        <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-400">
-          O link de configuração expirou. Clica em "Continuar configuração" para gerar um novo.
-        </div>
-      )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
-
-      {isOnboarded && (
-        <div className="flex items-center justify-between py-1.5 border-t border-white/[0.06] text-xs">
-          <span className="text-gray-500">ID da conta</span>
-          <span className="font-mono text-gray-400">{status.accountId}</span>
-        </div>
-      )}
-
-      <div className="flex gap-2">
-        {!isOnboarded && (
-          <button
-            onClick={handleConnect}
-            disabled={connecting}
-            className="text-sm px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-500 disabled:opacity-50 transition-colors"
-          >
-            {connecting ? 'A redirecionar...' : isPending ? 'Continuar configuração' : 'Ligar conta Stripe'}
-          </button>
-        )}
-        {status?.connected && (
-          <button
-            onClick={() => {
-              if (confirm('Tens a certeza que queres desligar a conta Stripe?')) {
-                disconnectMutation.mutate();
-              }
-            }}
-            disabled={disconnectMutation.isPending}
-            className="text-sm px-4 py-2 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/10 disabled:opacity-50 transition-colors"
-          >
-            Desligar conta
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function InvoicesContent(): React.ReactElement {
   const searchParams = useSearchParams();
   const isSuccess = searchParams.get('success') === '1';
   const isCancelled = searchParams.get('cancelled') === '1';
-  const connectResult = searchParams.get('stripe_connect');
 
   const { data: billing, isLoading } = useQuery({
     queryKey: ['billing'],
@@ -290,9 +182,6 @@ function InvoicesContent(): React.ReactElement {
         {isLoading && (
           <div className="h-24 rounded-xl border border-white/[0.08] bg-white/[0.02] animate-pulse" />
         )}
-
-        {/* Stripe Connect */}
-        <StripeConnectCard connectResult={connectResult} />
 
         {/* Plan cards */}
         <div>
