@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import Stripe from 'stripe';
 import { Plan } from '@prisma/client';
-import { PaymentsService } from '../payments/payments.service';
 
 const PRICE_TO_PLAN: Record<string, Plan> = {};
 
@@ -17,7 +16,6 @@ export class BillingService {
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
-    private readonly paymentsService: PaymentsService,
   ) {
     this.stripe = new Stripe(this.config.getOrThrow('STRIPE_SECRET_KEY'), {
       apiVersion: '2026-04-22.dahlia',
@@ -121,77 +119,6 @@ export class BillingService {
     return { url: session.url };
   }
 
-  async createStripeConnectLink(tenantId: string, returnBaseUrl: string) {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { stripeConnectAccountId: true },
-    });
-    if (!tenant) throw new NotFoundException('Tenant não encontrado');
-
-    let accountId = tenant.stripeConnectAccountId;
-
-    if (!accountId) {
-      const account = await this.stripe.accounts.create({
-        type: 'express',
-        metadata: { tenantId },
-      });
-      accountId = account.id;
-      await this.prisma.tenant.update({
-        where: { id: tenantId },
-        data: { stripeConnectAccountId: accountId },
-      });
-    }
-
-    const link = await this.stripe.accountLinks.create({
-      account: accountId,
-      refresh_url: `${returnBaseUrl}/pagamentos?stripe_connect=refresh`,
-      return_url: `${returnBaseUrl}/pagamentos?stripe_connect=success`,
-      type: 'account_onboarding',
-    });
-
-    return { url: link.url };
-  }
-
-  async getStripeConnectStatus(tenantId: string) {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { stripeConnectAccountId: true, stripeConnectOnboarded: true },
-    });
-    if (!tenant) throw new NotFoundException('Tenant não encontrado');
-
-    if (!tenant.stripeConnectAccountId) return { connected: false, onboarded: false };
-
-    try {
-      const account = await this.stripe.accounts.retrieve(tenant.stripeConnectAccountId);
-      const onboarded = !!(account.charges_enabled && account.details_submitted);
-
-      if (onboarded !== tenant.stripeConnectOnboarded) {
-        await this.prisma.tenant.update({
-          where: { id: tenantId },
-          data: { stripeConnectOnboarded: onboarded },
-        });
-      }
-
-      return {
-        connected: true,
-        onboarded,
-        accountId: tenant.stripeConnectAccountId,
-        chargesEnabled: account.charges_enabled,
-        detailsSubmitted: account.details_submitted,
-      };
-    } catch {
-      return { connected: false, onboarded: false };
-    }
-  }
-
-  async disconnectStripeConnect(tenantId: string) {
-    await this.prisma.tenant.update({
-      where: { id: tenantId },
-      data: { stripeConnectAccountId: null, stripeConnectOnboarded: false },
-    });
-    return { success: true };
-  }
-
   async handleWebhook(rawBody: Buffer, signature: string) {
     let event: Awaited<ReturnType<typeof this.stripe.webhooks.constructEvent>>;
 
@@ -258,17 +185,6 @@ export class BillingService {
         break;
       }
 
-      case 'payment_intent.succeeded': {
-        const pi = event.data.object as { id: string };
-        await this.paymentsService.handlePaymentSucceeded(pi.id);
-        break;
-      }
-
-      case 'payment_intent.payment_failed': {
-        const pi = event.data.object as { id: string };
-        await this.paymentsService.handlePaymentFailed(pi.id);
-        break;
-      }
     }
 
     return { received: true };

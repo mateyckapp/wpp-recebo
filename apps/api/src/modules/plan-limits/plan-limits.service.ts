@@ -9,7 +9,6 @@ export interface PlanLimits {
   agendaEnabled: boolean;
   scheduledMessagesEnabled: boolean;
   reportsEnabled: boolean;
-  paymentsEnabled: boolean;
 }
 
 const LIMITS: Record<Plan, PlanLimits> = {
@@ -20,7 +19,6 @@ const LIMITS: Record<Plan, PlanLimits> = {
     agendaEnabled: false,
     scheduledMessagesEnabled: false,
     reportsEnabled: false,
-    paymentsEnabled: false,
   },
   [Plan.PRO]: {
     maxAgents: Infinity,
@@ -29,7 +27,6 @@ const LIMITS: Record<Plan, PlanLimits> = {
     agendaEnabled: false,
     scheduledMessagesEnabled: true,
     reportsEnabled: true,
-    paymentsEnabled: true,
   },
   [Plan.AGENDA_PRO]: {
     maxAgents: Infinity,
@@ -38,7 +35,6 @@ const LIMITS: Record<Plan, PlanLimits> = {
     agendaEnabled: true,
     scheduledMessagesEnabled: true,
     reportsEnabled: true,
-    paymentsEnabled: true,
   },
   [Plan.ENTERPRISE]: {
     maxAgents: Infinity,
@@ -47,7 +43,6 @@ const LIMITS: Record<Plan, PlanLimits> = {
     agendaEnabled: true,
     scheduledMessagesEnabled: true,
     reportsEnabled: true,
-    paymentsEnabled: true,
   },
 };
 
@@ -140,20 +135,6 @@ export class PlanLimitsService {
     if (!this.getLimits(tenant.plan).reportsEnabled) {
       throw new ForbiddenException(
         `O teu plano ${tenant.plan} não inclui relatórios avançados. Faz upgrade para o plano PRO ou superior.`,
-      );
-    }
-  }
-
-  async assertPaymentsEnabled(tenantId: string): Promise<void> {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { plan: true },
-    });
-    if (!tenant) return;
-
-    if (!this.getLimits(tenant.plan).paymentsEnabled) {
-      throw new ForbiddenException(
-        'O teu plano não inclui cobranças via WhatsApp. Faz upgrade para o plano PRO ou superior.',
       );
     }
   }

@@ -111,8 +111,6 @@ model Tenant {
   whatsappAccessToken        String?
   stripeCustomerId           String?
   stripeSubscriptionId       String?
-  stripeConnectAccountId     String?
-  stripeConnectOnboarded     Boolean  @default(false)
   trialEndsAt                DateTime?
   logoUrl                    String?
   primaryColor               String?
@@ -139,7 +137,6 @@ model Tenant {
   notificationJobs      AppointmentNotificationJob[]
   apiKeys               ApiKey[]
   webhooks              Webhook[]
-  payments              Payment[]
 
   @@map("tenants")
 }
@@ -679,26 +676,4 @@ model Appointment {
   @@index([tenantId, scheduledAt])
   @@index([contactId])
   @@map("appointments")
-}
-
-model Payment {
-  id                    String    @id @default(cuid())
-  tenantId              String
-  tenant                Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  conversationId        String?
-  contactId             String?
-  amount                Int
-  currency              String    @default("eur")
-  description           String
-  status                String    @default("pending")
-  stripePaymentIntentId String    @unique
-  token                 String    @unique
-  paidAt                DateTime?
-  expiresAt             DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@index([tenantId])
-  @@index([token])
-  @@map("payments")
 }
