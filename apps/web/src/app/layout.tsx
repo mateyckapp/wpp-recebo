@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Syne, DM_Sans } from 'next/font/google';
 import Script from 'next/script';
 import { Providers } from '@/components/providers';
 import { CookieBanner } from '@/components/cookie-banner';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
+const syne = Syne({ subsets: ['latin'], weight: ['400', '600', '700', '800'], variable: '--font-syne' });
+const dmSans = DM_Sans({ subsets: ['latin'], weight: ['300', '400', '500'], style: ['normal', 'italic'], variable: '--font-dm-sans' });
 
 export const metadata: Metadata = {
   title: 'Wpp-Recebo',
@@ -38,7 +40,7 @@ export default async function RootLayout({
   const tiktokPixelId = pixels['tiktok_pixel_id'] ?? '';
 
   return (
-    <html lang="pt">
+    <html lang="pt" className={`${syne.variable} ${dmSans.variable}`}>
       <head>
         {/* Google Analytics 4 */}
         {gaId && (
